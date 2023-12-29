@@ -38,6 +38,7 @@ public partial class ComeyaContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserStatus> UserStatuses { get; set; }
+    //public virtual DbSet<OrderHistory> OrderHistories { get; set; }
 
   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -99,6 +100,29 @@ public partial class ComeyaContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("cart_ibfk_2");
         });
+
+        //modelBuilder.Entity<OrderHistory>(entity =>
+        //{
+        //    entity.HasKey(e => new { e.UserId, e.OrderId }).HasName("PRIMARY");
+
+        //    entity.ToTable("order_history");
+
+        //    entity.HasIndex(e => e.OrderId, "Order_Id");
+
+        //    entity.Property(e => e.UserId).HasColumnName("User_Id");
+        //    entity.Property(e => e.OrderId).HasColumnName("Order_Id");
+            
+
+        //    entity.HasOne(d => d.Order).WithOne(p => p.OrderHistories)
+        //        .HasForeignKey(d => d.ItemId)
+        //        .OnDelete(DeleteBehavior.ClientSetNull)
+        //        .HasConstraintName("cart_ibfk_1");
+
+        //    entity.HasOne(d => d.User).WithMany(p => p.Carts)
+        //        .HasForeignKey(d => d.UserId)
+        //        .OnDelete(DeleteBehavior.ClientSetNull)
+        //        .HasConstraintName("cart_ibfk_2");
+        //});
 
         modelBuilder.Entity<Categorytype>(entity =>
         {

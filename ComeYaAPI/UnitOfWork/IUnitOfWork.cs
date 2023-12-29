@@ -9,6 +9,10 @@ namespace ComeYa.Interfaces
         ICartRepository Cart { get; }
         IItemRepository Items { get; }
         IRestaurantRepository Restaurants { get; }
+        IBillRepository Bills { get; }
+        IOrderRepository Orders { get; }
+        IOrderItemRepository OrderItem { get; }
+
         Task Complete();
         void BeginTransaction();
         void Rollback();
