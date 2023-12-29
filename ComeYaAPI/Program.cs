@@ -8,10 +8,10 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Stripe;
 using ComeYaAPI.Services;
-using ComeYaAPI.Middlewares;
 using Server.Controllers;
 using Microsoft.AspNetCore.Hosting.Server;
 using ComeYaAPI.Services.Stripe;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,11 +82,14 @@ builder.Services.AddAutoMapper(typeof(Program));
 //
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 // UnitOfWork
-builder.Services.AddScoped<WebToken>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IWebToken,WebToken>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<Hasher>();
 builder.Services.AddTransient<CheckoutController>();
+
 builder.Services.AddScoped<IStripeService, StripeService>();
+
 
 
 
@@ -99,7 +102,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors();

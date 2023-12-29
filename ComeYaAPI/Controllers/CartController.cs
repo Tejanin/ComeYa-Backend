@@ -24,11 +24,11 @@ namespace ComeYaAPI.Controllers
     public class CartController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly WebToken _webToken;
+        private readonly IWebToken _webToken;
         private readonly CheckoutController _checkoutController;
 
 
-        public CartController(IUnitOfWork unitOfWork,CheckoutController checkoutController,  WebToken webToken) 
+        public CartController(IUnitOfWork unitOfWork,CheckoutController checkoutController,  IWebToken webToken) 
         { 
             _unitOfWork = unitOfWork;
             _webToken = webToken;
@@ -41,7 +41,7 @@ namespace ComeYaAPI.Controllers
         {
             
 
-            var authTokenUserId = _webToken.ValidateTokenUserId(User);
+            var authTokenUserId = _webToken.GetUserId();
             if(authTokenUserId == 0) return Unauthorized();
             int userId = authTokenUserId;
             var cartItemDTOList = await _unitOfWork.Cart.GetCartItems(userId, page);
@@ -62,7 +62,7 @@ namespace ComeYaAPI.Controllers
         public async Task<ActionResult<ICollection<ShowCartItemDTO>>> AddItem([FromBody] AddCartItemDTO itemDTO)
         {
             itemDTO.AssignUserId(User);
-            int id = _webToken.ValidateTokenUserId(User);
+            int id = _webToken.GetUserId();
             var firstCartItem = await _unitOfWork.Cart.FindIncluding<Cart>(u=> u.UserId == itemDTO.UserId,
                 x=> x.Item);
             if (await _unitOfWork.Cart.CheckIfEmpty(id)== false) 
@@ -142,7 +142,7 @@ namespace ComeYaAPI.Controllers
         [Route("DeleteAllItems")]
         public async Task<ActionResult> DeleteAllItems()
         {
-            int id = _webToken.ValidateTokenUserId(User);
+            int id = _webToken.GetUserId();
             try
             {
                 _unitOfWork.BeginTransaction();
@@ -163,7 +163,7 @@ namespace ComeYaAPI.Controllers
         [Route("PurchaseOrderStripe")]
         public async Task<ActionResult<string>> PurchaseOrderStripe()
         {
-            int id = _webToken.ValidateTokenUserId(User);
+            int id = _webToken.GetUserId();
             var items = await _unitOfWork.Cart.GetCartItems(id);
             
             try
@@ -181,12 +181,7 @@ namespace ComeYaAPI.Controllers
            
         }
 
-       /* [HttpPatch]
-        [Route("PurchaseOrderWithBalance")]
-        public async Task<ActionResult> PurchaseOrderWithBalance()
-        {
-
-        }*/
+       
 
         
 

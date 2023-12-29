@@ -19,10 +19,10 @@ namespace ComeYaAPI.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         
-        private readonly WebToken _webToken;
+        private readonly IWebToken _webToken;
         private readonly EmailService _email;
 
-        public UsersController(IUnitOfWork unitOfWork,EmailService email, WebToken webToken)
+        public UsersController(IUnitOfWork unitOfWork,EmailService email, IWebToken webToken)
         {
             _unitOfWork = unitOfWork;
             _webToken = webToken;
@@ -82,7 +82,7 @@ namespace ComeYaAPI.Controllers
             if (user.Entity != null)
             {
 
-                token = _webToken.SendToken(user.Entity.Id, user.Entity.Name, user.Entity.Lname, user.Entity.Genre, user.Entity.Phone);
+                token = _webToken.SendToken(user.Entity.Id, user.Entity.Name, user.Entity.Lname, user.Entity.Genre, user.Entity.Phone,user.Entity.Email);
                 return Ok(new { Token = token, RedirectUrl = $"/Home" });
 
             }

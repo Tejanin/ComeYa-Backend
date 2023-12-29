@@ -18,7 +18,7 @@ namespace ComeYaAPI.Services.Stripe
             StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
-        public async Task<Session> CreateCheckoutSession(List<SessionLineItemOptions> lineItems, string successUrl, string cancelUrl)
+        public async Task<Session> CreateCheckoutSession(List<SessionLineItemOptions> lineItems, string successUrl, string cancelUrl, string email)
         {
             
             var options = new SessionCreateOptions
@@ -28,7 +28,7 @@ namespace ComeYaAPI.Services.Stripe
                 Mode = "payment",
                 SuccessUrl = successUrl,
                 CancelUrl = cancelUrl,
-                //Customer= id.ToString(),
+                CustomerEmail= email
                 
             };
              

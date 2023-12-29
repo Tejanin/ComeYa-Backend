@@ -12,6 +12,8 @@ namespace ComeYaAPI.Interfaces
         Task<EntityListResult<ReadUserDTO>> GetAllUsers(string? genre, int page);
         Task<EntityResult<User>> ActivateUser(string id);
         Task<EntityResult<User>> UpdateUser(int id);
+        Task<int> GetIdUser(string email);
+
 
     }
 }

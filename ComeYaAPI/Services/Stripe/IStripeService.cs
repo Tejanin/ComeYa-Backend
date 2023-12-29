@@ -5,6 +5,6 @@ namespace ComeYaAPI.Services.Stripe
 {
     public interface IStripeService
     {
-        Task<Session> CreateCheckoutSession(List<SessionLineItemOptions> lineItems, string successUrl, string cancelUrl);
+        Task<Session> CreateCheckoutSession(List<SessionLineItemOptions> lineItems, string successUrl, string cancelUrl, string email);
     }
 }

@@ -101,6 +101,12 @@ namespace ComeYaAPI.Repositories
             return result;
         }
 
+        public async Task<int> GetIdUser(string email)
+        {
+            var user = await FindAsync(x=> x.Email == email);
+            return user.Id;
+        }
+
         public async Task<EntityResult<User>> Login(LoginUserDTO userDTO)
         {
             var result = new EntityResult<User>();

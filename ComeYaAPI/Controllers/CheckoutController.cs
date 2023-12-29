@@ -1,5 +1,6 @@
 ﻿using ComeYa.Interfaces;
 using ComeYaAPI.Context;
+
 using ComeYaAPI.Models.DTOs.CartDTOs;
 using ComeYaAPI.Models.DTOs.StripeDTOs;
 using ComeYaAPI.Services;
@@ -11,6 +12,7 @@ using Nest;
 using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
+using System.Security.Claims;
 
 namespace Server.Controllers;
 
@@ -22,22 +24,29 @@ public class CheckoutController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IStripeService _stripe;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly WebToken _webToken;
+    
+    private readonly IWebToken _webToken;
     private readonly ILogger<CheckoutController> _logger;
     const string endpointSecret = "whsec_fe44b56bb936c11723371fab977ba989fd52627f19cc26b23c0dae61b1bb4f27";
-    public CheckoutController(IConfiguration configuration, IStripeService stripe, IUnitOfWork unitOfWork, WebToken webToken, ILogger<CheckoutController> logger)
+    
+    public CheckoutController(IConfiguration configuration, IStripeService stripe, IUnitOfWork unitOfWork, IWebToken webToken, ILogger<CheckoutController> logger)
     {
         _configuration = configuration;
         _stripe = stripe; 
         _unitOfWork = unitOfWork;
         _logger = logger;
         _webToken = webToken;
+       
+
+       // userId = _webToken.ValidateTokenUserId(User);
     }
 
     [HttpPost]
     [Route("CheckoutOrder")]
     public async Task<ActionResult<CheckoutUrlDTO>> CheckoutOrder(IEnumerable<ShowCartItemDTO> product)
     {
+      
+        
         try
         {
             
@@ -71,7 +80,7 @@ public class CheckoutController : ControllerBase
             // var successUrl = $"{Request.Scheme}://{Request.Host}/checkout/success";
             //var cancelUrl = $"{Request.Scheme}://{Request.Host}/checkout/cancel";
             try {
-                var session = await _stripe.CreateCheckoutSession(lineItems, successUrl, cancelUrl);
+                var session = await _stripe.CreateCheckoutSession(lineItems, successUrl, cancelUrl,_webToken.GetUserEmail());
 
                 // Construir el DTO directamente
                 var checkoutUrlDto = new CheckoutUrlDTO
@@ -106,33 +115,36 @@ public class CheckoutController : ControllerBase
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
         var stripeEvent = EventUtility.ConstructEvent(json,
                     Request.Headers["Stripe-Signature"], endpointSecret);
-        
-        // Handle the event
+      
         if (stripeEvent.Type == Events.ChargeSucceeded)
         {
-            var session = stripeEvent.Data.Object as Session;
-            int userId = Convert.ToInt32(session.Customer);
+            var charge = stripeEvent.Data.Object as Charge ;
+
+
+            int id = await _unitOfWork.Users.GetIdUser(charge.BillingDetails.Email);
+
+
 
 
             try
             {
                 _unitOfWork.BeginTransaction();
 
-                await _unitOfWork.Cart.DeleteAllItems(userId);
+                await _unitOfWork.Cart.DeleteAllItems(id);
                 await _unitOfWork.Complete();
-                Console.WriteLine($"Evento recibido: {session.Id}");
+                
                 return Ok();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al manejar el evento: {ex.Message}");
+                
                 _unitOfWork.Rollback();
                 return StatusCode(500, "Error interno del servidor");
             }
         }
         else
         {
-            return BadRequest("Hubo un fallo.");
+            return Ok();
         }
 
        
@@ -140,19 +152,21 @@ public class CheckoutController : ControllerBase
 
 
 
-    //[HttpGet("success")]
-    // Automatic query parameter handling from ASP.NET.
-    // Example URL: https://localhost:7051/checkout/success?sessionId=si_123123123123
-    /*public ActionResult CheckoutSuccess(string sessionId)
+    private int GetTokenId()
     {
-        var sessionService = new SessionService();
-        var session = sessionService.Get(sessionId);
+        ClaimsPrincipal claimsPrincipal = User;
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id");
+        foreach (var claim in claimsPrincipal.Claims)
+        {
+            Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+        }
 
-        // Here you can save order and customer details to your database.
-        var total = session.AmountTotal.Value;
-        var customerEmail = session.CustomerDetails.Email;
-
-        return Redirect(s_wasmClientURL + "success");
-    }*/
+        if (userIdClaim != null)
+        {
+            int userId = int.Parse(userIdClaim.Value);
+            return userId;
+        }
+        return 0;
+    }
 }
 
