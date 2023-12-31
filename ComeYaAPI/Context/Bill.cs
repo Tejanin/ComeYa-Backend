@@ -19,6 +19,8 @@ public partial class Bill
 
     public string BillCode { get; set; } = null!;
 
+    public string Url { get; set; } = null!;
+
     public virtual Order Order { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;

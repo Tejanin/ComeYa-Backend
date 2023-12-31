@@ -22,6 +22,7 @@ namespace ComeYa.Interfaces
 
         // POST
         Task AddAsync(TEntity entity);
+        void Add(TEntity entity);
         Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities);
 
         // PUT

@@ -12,11 +12,13 @@ namespace ComeYa.Interfaces
         IBillRepository Bills { get; }
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItem { get; }
+        IOrderHistoryRepository OrderHistory { get; }
 
         Task Complete();
         void BeginTransaction();
         void Rollback();
         void DisposeWithTransact();
+        Task SaveChangesAsync();
         
     }
 }

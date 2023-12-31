@@ -33,7 +33,7 @@ public partial class User
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
-    public virtual UserStatus Status { get; set; } = null!;
+    public virtual ICollection<OrderHistory> OrderHistories { get; set; } = new List<OrderHistory>();
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    public virtual UserStatus Status { get; set; } = null!;
 }

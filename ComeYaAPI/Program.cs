@@ -87,6 +87,7 @@ builder.Services.AddScoped<IWebToken,WebToken>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<Hasher>();
 builder.Services.AddTransient<CheckoutController>();
+builder.Services.AddScoped<OrderService>();
 
 builder.Services.AddScoped<IStripeService, StripeService>();
 

@@ -26,7 +26,7 @@ namespace ComeYaAPI.UnitOfWork
             Orders = new OrderRepository(context,mapper);
             Bills = new BillRepository(context,mapper);
             OrderItem = new OrderItemRepository(context,mapper);
-
+            OrderHistory = new OrderHistoryRepository(context,mapper);
 
         }
 
@@ -37,6 +37,7 @@ namespace ComeYaAPI.UnitOfWork
         public IOrderItemRepository OrderItem { get; private set; }
         public IOrderRepository Orders { get; private set; }
         public IBillRepository Bills { get; private set; }
+        public IOrderHistoryRepository OrderHistory { get; private set; }
         public async Task Complete()
         {
             await _context.SaveChangesAsync();
@@ -64,6 +65,11 @@ namespace ComeYaAPI.UnitOfWork
         {
             _transaction?.Dispose();
             _context.Dispose();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -13,9 +13,9 @@ public partial class Order
 
     public virtual Bill? Bill { get; set; }
 
+    public virtual OrderHistory? OrderHistory { get; set; }
+
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual OrderStatus OrderStatus { get; set; } = null!;
-
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

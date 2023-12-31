@@ -2,6 +2,7 @@
 using ComeYa.Repositories;
 using ComeYaAPI.Context;
 using ComeYaAPI.Interfaces;
+using System;
 
 namespace ComeYaAPI.Repositories
 {
@@ -17,5 +18,31 @@ namespace ComeYaAPI.Repositories
         {
                 _mapper = mapper;
         }
+
+        public async Task<Order> GetOrder(string code)
+        {
+            var order = await FindAsync(x=> x.OrderCode == code);
+            return order;
+        }
+
+        public async Task<int> Add()
+        {
+            Guid guid = Guid.NewGuid();
+            string code = $"ORDER-{guid.ToString("N").Substring(0, 9)}";
+            var order = new Order { OrderCode = code };
+             _context.Add(order);
+            _context.SaveChanges();
+            var newOrder = await GetOrder(code);
+            return newOrder.Id;
+        }
+
+        //public async void Add()
+        //{
+        //    
+        //    string code = uniqueGuid.ToString();
+        //    var order = new Order {OrderCode = code};
+        //    await AddAsync(order);
+
+        //}
     }
 }

@@ -75,7 +75,8 @@ namespace ComeYaAPI.Repositories
                  Name = cart.Item.Name, // Supongo que hay una propiedad Description en la clase Item
                  Price = cart.Item.Price,              // Supongo que hay una propiedad Price en la clase Item
                  Quantity = cart.Quantity,
-                 Amount = cart.Quantity * cart.Item.Price // Cálculo del monto total
+                 Amount = Math.Round(cart.Quantity * cart.Item.Price* 1.18M,2),  // Cálculo del monto total
+                 Image = cart.Item.Image,
              }).ToList();
 
             result.Entity = cartItemDTOList;

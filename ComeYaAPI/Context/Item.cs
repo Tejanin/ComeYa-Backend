@@ -14,12 +14,12 @@ public partial class Item
     public decimal Price { get; set; }
 
     public string Image { get; set; } = null!;
-    public string Name { get; set; } = null!;
-
 
     public int RestaurantId { get; set; }
 
     public ulong Combo { get; set; }
+
+    public string Name { get; set; } = null!;
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 

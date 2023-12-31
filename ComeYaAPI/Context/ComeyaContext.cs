@@ -29,6 +29,8 @@ public partial class ComeyaContext : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
+    public virtual DbSet<OrderHistory> OrderHistories { get; set; }
+
     public virtual DbSet<OrderItem> OrderItems { get; set; }
 
     public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
@@ -38,9 +40,8 @@ public partial class ComeyaContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserStatus> UserStatuses { get; set; }
-    //public virtual DbSet<OrderHistory> OrderHistories { get; set; }
 
-  
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Bill>(entity =>
@@ -57,7 +58,7 @@ public partial class ComeyaContext : DbContext
 
             entity.Property(e => e.Balance).HasPrecision(15, 3);
             entity.Property(e => e.BillCode)
-                .HasMaxLength(10)
+                .HasMaxLength(50)
                 .HasColumnName("Bill_Code");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -65,6 +66,7 @@ public partial class ComeyaContext : DbContext
                 .HasColumnName("Created_At");
             entity.Property(e => e.OrderId).HasColumnName("Order_Id");
             entity.Property(e => e.Taxes).HasPrecision(10, 3);
+            entity.Property(e => e.Url).HasColumnType("text");
             entity.Property(e => e.UserId).HasColumnName("User_Id");
 
             entity.HasOne(d => d.Order).WithOne(p => p.Bill)
@@ -100,29 +102,6 @@ public partial class ComeyaContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("cart_ibfk_2");
         });
-
-        //modelBuilder.Entity<OrderHistory>(entity =>
-        //{
-        //    entity.HasKey(e => new { e.UserId, e.OrderId }).HasName("PRIMARY");
-
-        //    entity.ToTable("order_history");
-
-        //    entity.HasIndex(e => e.OrderId, "Order_Id");
-
-        //    entity.Property(e => e.UserId).HasColumnName("User_Id");
-        //    entity.Property(e => e.OrderId).HasColumnName("Order_Id");
-            
-
-        //    entity.HasOne(d => d.Order).WithOne(p => p.OrderHistories)
-        //        .HasForeignKey(d => d.ItemId)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("cart_ibfk_1");
-
-        //    entity.HasOne(d => d.User).WithMany(p => p.Carts)
-        //        .HasForeignKey(d => d.UserId)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("cart_ibfk_2");
-        //});
 
         modelBuilder.Entity<Categorytype>(entity =>
         {
@@ -175,10 +154,10 @@ public partial class ComeyaContext : DbContext
             entity.HasIndex(e => e.RestaurantId, "Restaurant_Id");
 
             entity.Property(e => e.Combo).HasColumnType("bit(1)");
-            entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.FoodId).HasColumnName("Food_Id");
             entity.Property(e => e.Image).HasMaxLength(1000);
+            entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Price).HasPrecision(12, 3);
             entity.Property(e => e.RestaurantId).HasColumnName("Restaurant_Id");
 
@@ -203,7 +182,7 @@ public partial class ComeyaContext : DbContext
             entity.HasIndex(e => e.OrderStatusId, "Order_Status_Id");
 
             entity.Property(e => e.OrderCode)
-                .HasMaxLength(10)
+                .HasMaxLength(50)
                 .HasColumnName("Order_Code");
             entity.Property(e => e.OrderStatusId)
                 .HasDefaultValueSql("'1'")
@@ -213,26 +192,28 @@ public partial class ComeyaContext : DbContext
                 .HasForeignKey(d => d.OrderStatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("order_ibfk_1");
+        });
 
-            entity.HasMany(d => d.Users).WithMany(p => p.Orders)
-                .UsingEntity<Dictionary<string, object>>(
-                    "OrderHistory",
-                    r => r.HasOne<User>().WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("order_history_ibfk_2"),
-                    l => l.HasOne<Order>().WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("order_history_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("OrderId", "UserId").HasName("PRIMARY");
-                        j.ToTable("order_history");
-                        j.HasIndex(new[] { "UserId" }, "User_Id");
-                        j.IndexerProperty<int>("OrderId").HasColumnName("Order_Id");
-                        j.IndexerProperty<int>("UserId").HasColumnName("User_Id");
-                    });
+        modelBuilder.Entity<OrderHistory>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.OrderId }).HasName("PRIMARY");
+
+            entity.ToTable("order_history");
+
+            entity.HasIndex(e => e.OrderId, "Order_Id_UNIQUE").IsUnique();
+
+            entity.Property(e => e.UserId).HasColumnName("User_Id");
+            entity.Property(e => e.OrderId).HasColumnName("Order_Id");
+
+            entity.HasOne(d => d.Order).WithOne(p => p.OrderHistory)
+                .HasForeignKey<OrderHistory>(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("order_history_ibfk_1");
+
+            entity.HasOne(d => d.User).WithMany(p => p.OrderHistories)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("order_history_ibfk_2");
         });
 
         modelBuilder.Entity<OrderItem>(entity =>
@@ -245,8 +226,7 @@ public partial class ComeyaContext : DbContext
 
             entity.Property(e => e.OrderId).HasColumnName("Order_Id");
             entity.Property(e => e.ItemId).HasColumnName("Item_Id");
-            entity.Property(e => e.Amount).HasPrecision(15, 3);
-            entity.Property(e => e.Quantity).HasDefaultValueSql("'1'");
+            entity.Property(e => e.Amount).HasPrecision(15, 3).HasColumnName("Amount");
 
             entity.HasOne(d => d.Item).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.ItemId)
@@ -274,11 +254,11 @@ public partial class ComeyaContext : DbContext
 
             entity.ToTable("restaurant");
 
+            entity.Property(e => e.Background).HasMaxLength(500);
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.Logo).HasMaxLength(500);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Rating).HasPrecision(2, 1);
-            entity.Property(e => e.Background).HasMaxLength(500);
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -287,9 +267,9 @@ public partial class ComeyaContext : DbContext
 
             entity.ToTable("user");
 
-            entity.HasIndex(e => e.StatusId, "Status_Id");
-
             entity.HasIndex(e => e.Email, "UQ_Email_Unique").IsUnique();
+
+            entity.HasIndex(e => e.StatusId, "user_ibfk_1");
 
             entity.Property(e => e.Balance)
                 .HasPrecision(14, 3)
@@ -305,7 +285,9 @@ public partial class ComeyaContext : DbContext
             entity.Property(e => e.Password).HasMaxLength(500);
             entity.Property(e => e.Phone).HasMaxLength(30);
             entity.Property(e => e.Salt).HasMaxLength(500);
-            entity.Property(e => e.StatusId).HasColumnName("Status_Id");
+            entity.Property(e => e.StatusId)
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("Status_Id");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")

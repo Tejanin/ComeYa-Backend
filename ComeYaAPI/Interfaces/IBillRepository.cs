@@ -5,5 +5,6 @@ namespace ComeYaAPI.Interfaces
 {
     public interface IBillRepository:IRepository<Bill>
     {
+        Task AddBill(string receiptUrl, int orderId, int userId,decimal amount);
     }
 }

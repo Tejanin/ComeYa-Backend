@@ -2,6 +2,7 @@
 using ComeYa.Repositories;
 using ComeYaAPI.Context;
 using ComeYaAPI.Interfaces;
+using ComeYaAPI.Models.DTOs.CartDTOs;
 using ComeYaAPI.Services;
 
 namespace ComeYaAPI.Repositories
@@ -20,5 +21,30 @@ namespace ComeYaAPI.Repositories
             get { return _context as ComeyaContext; }
 
         }
+        public decimal AddOrderItem(int orderId, int userId, IEnumerable<ShowCartItemDTO> items)
+        {
+
+            decimal balance = 0M;
+            foreach (var item in items)
+            {
+                _context.Add(new OrderItem
+                {
+                    OrderId = orderId,
+                    ItemId = item.Id,
+                    Amount = item.Amount,
+                    
+                });
+                balance += item.Amount;
+                _context.SaveChanges();
+
+            }
+
+           return balance;
+            
+
+
+
+        }
+
     }
 }

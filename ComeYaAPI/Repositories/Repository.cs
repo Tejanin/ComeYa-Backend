@@ -128,5 +128,10 @@ namespace ComeYa.Repositories
 
             return await query.FirstOrDefaultAsync();
         }
+
+        public void Add(TEntity entity)
+        {
+            _context.Set<TEntity>().Add(entity);
+        }
     }
 }

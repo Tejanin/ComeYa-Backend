@@ -18,25 +18,24 @@ namespace Server.Controllers;
 
 [ApiController]
 [Route("ComeYa/[controller]")]
-//[ApiExplorerSettings(IgnoreApi = true)]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class CheckoutController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
     private readonly IStripeService _stripe;
     private readonly IUnitOfWork _unitOfWork;
-    
+    private readonly OrderService _orderService;
     private readonly IWebToken _webToken;
     private readonly ILogger<CheckoutController> _logger;
     const string endpointSecret = "whsec_fe44b56bb936c11723371fab977ba989fd52627f19cc26b23c0dae61b1bb4f27";
     
-    public CheckoutController(IConfiguration configuration, IStripeService stripe, IUnitOfWork unitOfWork, IWebToken webToken, ILogger<CheckoutController> logger)
+    public CheckoutController( IStripeService stripe, IUnitOfWork unitOfWork, IWebToken webToken, ILogger<CheckoutController> logger, OrderService orderService)
     {
-        _configuration = configuration;
+        
         _stripe = stripe; 
         _unitOfWork = unitOfWork;
         _logger = logger;
         _webToken = webToken;
-       
+       _orderService= orderService;
 
        // userId = _webToken.ValidateTokenUserId(User);
     }
@@ -59,12 +58,12 @@ public class CheckoutController : ControllerBase
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmountDecimal = item.Price * item.Quantity * 100, // Precio en centavos
+                        UnitAmountDecimal = item.Price * item.Quantity * 100, // Precio en centavos e impuestos incluidos
                         Currency = "DOP",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.Name,
-                            
+                            Images = new List<string> { item.Image},
                             Description = item.Description,
                         },
                     },
@@ -112,24 +111,31 @@ public class CheckoutController : ControllerBase
     [HttpPost("stripeWebhook")]
     public async Task<IActionResult> StripeWebhook()
     {
+        // Capturo el evento de stripe
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
         var stripeEvent = EventUtility.ConstructEvent(json,
                     Request.Headers["Stripe-Signature"], endpointSecret);
       
         if (stripeEvent.Type == Events.ChargeSucceeded)
         {
+            // Declaro variables para almacenar lo necesario para la insercion
             var charge = stripeEvent.Data.Object as Charge ;
 
-
+            string receipt = charge.ReceiptUrl;
+            decimal amount;
             int id = await _unitOfWork.Users.GetIdUser(charge.BillingDetails.Email);
-
+            var cartItems = await _unitOfWork.Cart.GetCartItems(id);
 
 
 
             try
             {
                 _unitOfWork.BeginTransaction();
-
+                int orderId = await _unitOfWork.Orders.Add();
+                amount = _unitOfWork.OrderItem.AddOrderItem(orderId,id,cartItems.Entity);
+                await _unitOfWork.OrderHistory.AddOrderHistory(id,orderId);
+                await _unitOfWork.Bills.AddBill(receipt,orderId,id,amount);
+                
                 await _unitOfWork.Cart.DeleteAllItems(id);
                 await _unitOfWork.Complete();
                 
@@ -139,7 +145,7 @@ public class CheckoutController : ControllerBase
             {
                 
                 _unitOfWork.Rollback();
-                return StatusCode(500, "Error interno del servidor");
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
         else
@@ -152,21 +158,6 @@ public class CheckoutController : ControllerBase
 
 
 
-    private int GetTokenId()
-    {
-        ClaimsPrincipal claimsPrincipal = User;
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id");
-        foreach (var claim in claimsPrincipal.Claims)
-        {
-            Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
-        }
-
-        if (userIdClaim != null)
-        {
-            int userId = int.Parse(userIdClaim.Value);
-            return userId;
-        }
-        return 0;
-    }
+    
 }
 
