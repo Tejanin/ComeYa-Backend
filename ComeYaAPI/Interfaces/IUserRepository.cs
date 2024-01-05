@@ -10,10 +10,12 @@ namespace ComeYaAPI.Interfaces
         Task<EntityResult<User>> AddUser(CreateUserDTO userDTO);
         Task<EntityResult<User>> Login(LoginUserDTO userDTO);
         Task<EntityListResult<ReadUserDTO>> GetAllUsers(string? genre, int page);
-        Task<EntityResult<User>> ActivateUser(string id);
-        Task<EntityResult<User>> UpdateUser(int id);
+        Task<EntityResult<User>> ActivateUser(string code);
+        Task UpdateUser(int id, UpdateUserDTO userDTO);
         Task<int> GetIdUser(string email);
-
+        void UpdateBalance(int id, decimal amount);
+        Task<decimal> GetBalance(int id);
+        Task<EntityResult<ReadUserDTO>> GetUserById(int id);
 
     }
 }

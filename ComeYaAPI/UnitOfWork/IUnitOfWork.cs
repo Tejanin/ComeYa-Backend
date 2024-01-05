@@ -9,7 +9,7 @@ namespace ComeYa.Interfaces
         ICartRepository Cart { get; }
         IItemRepository Items { get; }
         IRestaurantRepository Restaurants { get; }
-        IBillRepository Bills { get; }
+        
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItem { get; }
         IOrderHistoryRepository OrderHistory { get; }

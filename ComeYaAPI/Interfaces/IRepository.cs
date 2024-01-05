@@ -32,6 +32,6 @@ namespace ComeYa.Interfaces
         void Delete(TEntity entity);
         void DeleteRange(IEnumerable<TEntity> entities);
 
-       
+        
     }
 }

@@ -17,5 +17,7 @@ public partial class Restaurant
 
     public string Background { get; set; } = null!;
 
+    public string? MarketingImg { get; set; }
+
     public virtual ICollection<Item> Items { get; set; } = new List<Item>();
 }

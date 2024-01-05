@@ -17,6 +17,9 @@
         public string Restaurant { get; set; } = null!;
 
         public int Combo {  get; set; }
-        
+        public string MarketingImg1 { get; set; }
+        public string MarketingImg2 { get; set; }
+
+
     }
 }

@@ -18,6 +18,7 @@
 
         public string Genre { get; set; } = null!;
 
+        public string ActivationCode { get; set; } = null!;   
         public decimal Balance { get; set; }
 
         public int StatusId { get; set; }

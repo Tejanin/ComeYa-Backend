@@ -18,17 +18,24 @@ namespace ComeYaAPI.Controllers
         }
 
         // Metodo Get para mostrar todos los items
-        [HttpGet]
+        [HttpGet("AllItems")]
         
-        public async Task<ActionResult<IEnumerable<ReadItemDTO>>> GetAllItems(string? type, decimal price= 0M, int page=0, ulong combo=2 )
+        public async Task<ActionResult<IEnumerable<ReadItemDTO>>> GetAllItems(string? type, string? category,decimal price= 0M, int page=0, ulong combo=2, int restaurant=0 )
         {
            
-            var items = await _unitOfWork.Items.GetAllItems(type,price,page,combo);
-           
-            return Ok(items.Entity);
+            var items = await _unitOfWork.Items.GetAllItems(type,category,price,page,combo,restaurant);
+            _unitOfWork.Dispose();
 
-            
-            
+            return Ok(items.Entity);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ReadItemDTO>> GetById(int id)
+        {
+            var item = await _unitOfWork.Items.GetItemById(id);
+            _unitOfWork.Dispose();
+
+            return Ok(item.Entity);
         }
         // Metodo Get para mostrar los combos (filtro: Precio, FoodType, Restaurante)
         // Metodo Get por tipo de comida (Hambuerguesa, Pizza, ...)(filtro: Precio, FoodType, Restaurante)

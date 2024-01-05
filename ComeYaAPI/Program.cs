@@ -11,7 +11,8 @@ using ComeYaAPI.Services;
 using Server.Controllers;
 using Microsoft.AspNetCore.Hosting.Server;
 using ComeYaAPI.Services.Stripe;
-
+using ComeYaAPI.Interfaces;
+using ComeYaAPI.Models.DTOs.RestaurantDTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,14 +65,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 );
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAnyOrigin",
-        builder =>
-        {
-            builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
+    options.AddDefaultPolicy(builder =>
+    builder.AllowAnyHeader()
+    .AllowAnyOrigin()
+    .AllowAnyMethod());
+    
+    
 });
 var conn = builder.Configuration.GetConnectionString("ComeYa");
 builder.Services.AddDbContext<ComeyaContext>(option => option.UseMySql(conn, ServerVersion.AutoDetect(conn)));
@@ -87,8 +86,6 @@ builder.Services.AddScoped<IWebToken,WebToken>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<Hasher>();
 builder.Services.AddTransient<CheckoutController>();
-builder.Services.AddScoped<OrderService>();
-
 builder.Services.AddScoped<IStripeService, StripeService>();
 
 

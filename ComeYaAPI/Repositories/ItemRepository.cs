@@ -23,7 +23,7 @@ namespace ComeYaAPI.Repositories
            
         }
 
-        public async Task<EntityListResult<ReadItemDTO>> GetAllItems(string type, decimal price , int page, ulong combo)
+        public async Task<EntityListResult<ReadItemDTO>> GetAllItems(string? type, string? category, decimal price , int page, ulong combo, int restaurant)
         {
             var filters = new List<Func<Item, bool>>();
             var result = new EntityListResult<ReadItemDTO>();
@@ -31,6 +31,8 @@ namespace ComeYaAPI.Repositories
             if (!string.IsNullOrEmpty(type)) filters.Add(x => x.Food.FoodType.Description == type);
             if (price > 0) filters.Add(x => x.Price <= price);
             if (combo != 2) filters.Add(x=> x.Combo == combo);
+            if (restaurant != 0) filters.Add(x => x.Restaurant.Id == restaurant);
+            if(!string.IsNullOrEmpty(category)) filters.Add(x=> x.Food.CategoryType.Description==category); 
 
 
             var items = await GetAllIncluding<Item>(null,
@@ -51,7 +53,11 @@ namespace ComeYaAPI.Repositories
                 Image = x.Image,
                 Name = x.Name,
                 Food = x.Food.FoodType.Description,
-                Category = x.Food.CategoryType.Description
+                Category = x.Food.CategoryType.Description,
+                MarketingImg1= x.MarketingImg1,
+                MarketingImg2 = x.MarketingImg2,
+
+
             }).ToList();
 
            
@@ -62,9 +68,36 @@ namespace ComeYaAPI.Repositories
 
         }
 
-        public Task<EntityListResult<ReadItemDTO>> GetAllItems(string type, decimal price, int page, int combo)
+        
+
+        public async Task<EntityResult<ReadItemDTO>> GetItemById(int id)
         {
-            throw new NotImplementedException();
+            var result = new EntityResult<ReadItemDTO>();
+
+            var item = await FindIncluding<Item>(null,
+                x => x.Food,
+                x => x.Food.CategoryType,
+                x => x.Food.FoodType,
+                x => x.Restaurant
+                );
+
+            var itemDTO = new ReadItemDTO
+            {
+                Id = item.Id,
+                Price = item.Price,
+                Description = item.Description,
+                Restaurant = item.Restaurant.Name,
+                Image = item.Image,
+                Name = item.Name,
+                Food = item.Food.FoodType.Description,
+                Category = item.Food.CategoryType.Description
+            };
+
+            result.Entity = itemDTO;
+            result.StatusCode = 200;
+            result.Message = $"Articulo {item.Id}";
+
+            return result;
         }
     }
 }

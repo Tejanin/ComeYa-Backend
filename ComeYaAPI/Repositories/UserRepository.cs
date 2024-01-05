@@ -25,14 +25,14 @@ namespace ComeYaAPI.Repositories
 
         }
 
-        public async Task<EntityResult<User>> ActivateUser(string id)
+        public async Task<EntityResult<User>> ActivateUser(string code)
         {
             var result = new EntityResult<User>();
             result.Entity = null;
             result.StatusCode = 500;
             result.Message = "Error en el servidor";
-            int Id = int.Parse(id);
-            var user = await GetByIdAsync(Id);
+            
+            var user = await FindAsync(u=> u.ActivationCode == code);
             if (user != null)
             {
                 user.StatusId = 2;
@@ -53,7 +53,8 @@ namespace ComeYaAPI.Repositories
             result.Entity = null;
             result.StatusCode = 500;
             result.Message = "Error en el Servidor.";
-
+            Guid guid = Guid.NewGuid();
+            string code = $"{guid.ToString("N").Substring(0, 10).ToUpper()}";
 
             var userExists = await FindAsync(u => u.Email == userDTO.Email);
             string salt;
@@ -65,8 +66,8 @@ namespace ComeYaAPI.Repositories
                     salt = DateTime.Now.ToString();
                     user.Password = _hasher.HashedPassword(userDTO.Password, salt);
                     user.Salt = salt;
+                    user.ActivationCode = code;
                     await AddAsync(user);
-
                     result.Entity = user;
                     result.StatusCode=200;
                     
@@ -99,6 +100,13 @@ namespace ComeYaAPI.Repositories
             result.Message = "";
 
             return result;
+        }
+
+        public async Task<decimal> GetBalance(int id)
+        {
+            var user = await GetByIdAsync(id);
+            decimal balance = user.Balance;
+            return balance;
         }
 
         public async Task<int> GetIdUser(string email)
@@ -142,9 +150,48 @@ namespace ComeYaAPI.Repositories
             return result;
         }
 
-        public Task<EntityResult<User>> UpdateUser(int id)
+        public async void UpdateBalance(int id, decimal amount)
         {
-            throw new NotImplementedException();
+            var user = await GetByIdAsync(id);
+
+            
+            user.Balance += amount;
+            await Update(user);
+        }
+
+        public async Task UpdateUser(int id,UpdateUserDTO userDTO)
+        {
+            var user = await GetByIdAsync(id);
+            if(!string.IsNullOrEmpty(userDTO.Email)) user.Email = userDTO.Email;
+            if (!string.IsNullOrEmpty(userDTO.Name)) user.Name = userDTO.Name;
+            if (!string.IsNullOrEmpty(userDTO.Lname)) user.Lname = userDTO.Lname;
+            if (!string.IsNullOrEmpty(userDTO.Genre)) user.Genre = userDTO.Genre;
+            if (!string.IsNullOrEmpty(userDTO.Phone)) user.Phone = userDTO.Phone;
+
+            if (!string.IsNullOrEmpty(userDTO.Password)){
+                if(userDTO.Password == userDTO.PasswordConfirmed) { 
+                    user.Password = userDTO.PasswordConfirmed;
+                }
+            }
+            user.UpdatedAt = DateTime.Now; 
+
+
+            await Update(user);
+
+
+
+        }
+
+        public async Task<EntityResult<ReadUserDTO>> GetUserById(int id)
+        {
+            EntityResult<ReadUserDTO> result = new();
+            result.Message = $"Usuario {id}";
+            result.StatusCode = 200;
+            var user = await GetByIdAsync(id);
+            var userDTO = _mapper.Map<ReadUserDTO>(user);
+            result.Entity = userDTO;
+            return result;
+
         }
     }
 }

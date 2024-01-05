@@ -8,9 +8,9 @@ namespace ComeYaAPI.Interfaces
     public interface IItemRepository: IRepository<Item>
     {
         // Metodo Get para mostrar todos los items
-        Task<EntityListResult<ReadItemDTO>> GetAllItems(string type, decimal price, int page,ulong combo);
+        Task<EntityListResult<ReadItemDTO>> GetAllItems(string? type, string? category, decimal price, int page,ulong combo, int restaurant);
         // Metodo Get para mostrar los combos (filtro: Precio, FoodType, Restaurante)
-        
+        Task<EntityResult<ReadItemDTO>> GetItemById(int id);
         // Metodo Get por tipo de comida (Hambuerguesa, Pizza, ...)(filtro: Precio, FoodType, Restaurante)
         // Metodo Get por categoria de comida (Si es Vegana o no) (filtro: Precio, FoodType, Restaurante)
         // Metodo Get por restaurante 

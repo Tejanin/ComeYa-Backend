@@ -57,7 +57,7 @@ namespace ComeYaAPI.Controllers
 
                     await _unitOfWork.Complete();
                    
-                    await _email.SendEmail(userResult.Entity.Email, userResult.Entity.Id);
+                    await _email.SendEmail(userResult.Entity.Email, userResult.Entity.ActivationCode);
                     return Ok("Usuario ingresado.");
                 }
                 if (userResult.StatusCode == 409) return Conflict(userResult.Message);
@@ -83,6 +83,8 @@ namespace ComeYaAPI.Controllers
             {
 
                 token = _webToken.SendToken(user.Entity.Id, user.Entity.Name, user.Entity.Lname, user.Entity.Genre, user.Entity.Phone,user.Entity.Email);
+                _unitOfWork.Dispose();
+
                 return Ok(new { Token = token, RedirectUrl = $"/Home" });
 
             }
@@ -98,13 +100,17 @@ namespace ComeYaAPI.Controllers
         [HttpPatch]
         [Route("ActivateUser")]
 
-        public async Task<ActionResult<User>> Activate(string id)
+        public async Task<ActionResult<User>> Activate([FromBody] string code)
         {
+
+            
             try
             {
                 _unitOfWork.BeginTransaction();
-                var user = await _unitOfWork.Users.ActivateUser(id);
+                var user = await _unitOfWork.Users.ActivateUser(code);
                 await _unitOfWork.Complete();
+                _unitOfWork.Dispose();
+
                 return Ok(user.Entity);
 
 
@@ -114,6 +120,16 @@ namespace ComeYaAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetById(int id =0)
+        {
+            if (id == 0) id = _webToken.GetUserId();
+
+            var user =await _unitOfWork.Users.GetUserById(id);
+            _unitOfWork.Dispose();
+
+            return Ok(user.Entity);
+        }
     }
 }

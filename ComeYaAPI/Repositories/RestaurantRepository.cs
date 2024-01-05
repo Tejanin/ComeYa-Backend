@@ -58,5 +58,17 @@ namespace ComeYaAPI.Repositories
             
 
         }
+
+        public async Task<EntityResult<ReadRestaurantDTO>> GetById(int id)
+        {
+            var result = new EntityResult<ReadRestaurantDTO>();
+            result.StatusCode = 200;
+            result.Message = $"El restaurante {id}";
+
+            var restaurant = await GetByIdAsync(id);
+            var restaurantDTO = _mapper.Map<ReadRestaurantDTO>(restaurant);
+            result.Entity = restaurantDTO;  
+            return result;
+        }
     }
 }

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Server.Controllers;
 using Stripe;
 using Stripe.Checkout;
+using Stripe.FinancialConnections;
 using System.Security.Claims;
 
 namespace ComeYaAPI.Controllers
@@ -45,6 +46,8 @@ namespace ComeYaAPI.Controllers
             if(authTokenUserId == 0) return Unauthorized();
             int userId = authTokenUserId;
             var cartItemDTOList = await _unitOfWork.Cart.GetCartItems(userId, page);
+            _unitOfWork.Dispose();
+
             return Ok(cartItemDTOList.Entity);
             
 
@@ -112,7 +115,7 @@ namespace ComeYaAPI.Controllers
                 _unitOfWork.Rollback();
             }
 
-
+            _unitOfWork.Dispose();
            
             return Ok();
         }
@@ -127,6 +130,7 @@ namespace ComeYaAPI.Controllers
                 _unitOfWork.BeginTransaction();
                await _unitOfWork.Cart.DeleteItem(itemDTO);
                await  _unitOfWork.Complete();
+                _unitOfWork.Dispose();
 
                 return Ok();
 
@@ -148,6 +152,7 @@ namespace ComeYaAPI.Controllers
                 _unitOfWork.BeginTransaction();
                 await _unitOfWork.Cart.DeleteAllItems(id);
                 await _unitOfWork.Complete();
+                _unitOfWork.Dispose();
 
                 return Ok();
 
@@ -169,7 +174,8 @@ namespace ComeYaAPI.Controllers
             try
             {
                 var checkoutResponse =await _checkoutController.CheckoutOrder(items.Entity);
-  
+                _unitOfWork.Dispose();
+
                 return Ok(checkoutResponse.Value.url);
             }
             catch (Exception ex)
@@ -181,6 +187,37 @@ namespace ComeYaAPI.Controllers
            
         }
 
+        [HttpPost("PurchaseOrderWithBalance")]
+        public async Task<ActionResult> PurchaseOrderWithBalance()
+        {
+            int id = _webToken.GetUserId();
+            var cartItems = await _unitOfWork.Cart.GetCartItems(id);
+            decimal amount;
+            decimal userBalance = await _unitOfWork.Users.GetBalance(id);
+            decimal cartBalance = await _unitOfWork.Cart.GetCartBalance(id);
+            cartBalance *=  -1M;
+            if (userBalance < cartBalance) return BadRequest("Insuficiente saldo");
+            try
+            {
+                _unitOfWork.BeginTransaction();
+                int orderId = await _unitOfWork.Orders.Add("No disponible");
+                amount = _unitOfWork.OrderItem.AddOrderItem(orderId, id, cartItems.Entity);
+                await _unitOfWork.OrderHistory.AddOrderHistory(id, orderId);
+                _unitOfWork.Users.UpdateBalance(id, cartBalance);
+                await _unitOfWork.Cart.DeleteAllItems(id);
+                await _unitOfWork.Complete();
+                _unitOfWork.Dispose();
+
+            }
+            catch (Exception e)
+            {
+                _unitOfWork.Rollback();
+            }
+           
+
+            
+            return Ok();
+        }
        
 
         

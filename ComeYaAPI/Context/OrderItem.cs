@@ -11,6 +11,10 @@ public partial class OrderItem
 
     public decimal Amount { get; set; }
 
+    public int Quantity { get; set; }
+
+    public decimal Taxes { get; set; }
+
     public virtual Item Item { get; set; } = null!;
 
     public virtual Order Order { get; set; } = null!;

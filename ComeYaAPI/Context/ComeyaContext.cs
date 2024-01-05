@@ -15,8 +15,6 @@ public partial class ComeyaContext : DbContext
     {
     }
 
-    public virtual DbSet<Bill> Bills { get; set; }
-
     public virtual DbSet<Cart> Carts { get; set; }
 
     public virtual DbSet<Categorytype> Categorytypes { get; set; }
@@ -41,45 +39,9 @@ public partial class ComeyaContext : DbContext
 
     public virtual DbSet<UserStatus> UserStatuses { get; set; }
 
-    
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Bill>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("bill");
-
-            entity.HasIndex(e => e.BillCode, "Bill_Code").IsUnique();
-
-            entity.HasIndex(e => e.OrderId, "Order_Id").IsUnique();
-
-            entity.HasIndex(e => e.UserId, "User_Id");
-
-            entity.Property(e => e.Balance).HasPrecision(15, 3);
-            entity.Property(e => e.BillCode)
-                .HasMaxLength(50)
-                .HasColumnName("Bill_Code");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("datetime")
-                .HasColumnName("Created_At");
-            entity.Property(e => e.OrderId).HasColumnName("Order_Id");
-            entity.Property(e => e.Taxes).HasPrecision(10, 3);
-            entity.Property(e => e.Url).HasColumnType("text");
-            entity.Property(e => e.UserId).HasColumnName("User_Id");
-
-            entity.HasOne(d => d.Order).WithOne(p => p.Bill)
-                .HasForeignKey<Bill>(d => d.OrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("bill_ibfk_2");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Bills)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("bill_ibfk_1");
-        });
-
         modelBuilder.Entity<Cart>(entity =>
         {
             entity.HasKey(e => new { e.UserId, e.ItemId }).HasName("PRIMARY");
@@ -157,6 +119,8 @@ public partial class ComeyaContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.FoodId).HasColumnName("Food_Id");
             entity.Property(e => e.Image).HasMaxLength(1000);
+            entity.Property(e => e.MarketingImg1).HasMaxLength(200);
+            entity.Property(e => e.MarketingImg2).HasMaxLength(200);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Price).HasPrecision(12, 3);
             entity.Property(e => e.RestaurantId).HasColumnName("Restaurant_Id");
@@ -181,12 +145,17 @@ public partial class ComeyaContext : DbContext
 
             entity.HasIndex(e => e.OrderStatusId, "Order_Status_Id");
 
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("Created_At");
             entity.Property(e => e.OrderCode)
                 .HasMaxLength(50)
                 .HasColumnName("Order_Code");
             entity.Property(e => e.OrderStatusId)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("Order_Status_Id");
+            entity.Property(e => e.Receipt).HasColumnType("text");
 
             entity.HasOne(d => d.OrderStatus).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.OrderStatusId)
@@ -226,7 +195,8 @@ public partial class ComeyaContext : DbContext
 
             entity.Property(e => e.OrderId).HasColumnName("Order_Id");
             entity.Property(e => e.ItemId).HasColumnName("Item_Id");
-            entity.Property(e => e.Amount).HasPrecision(15, 3).HasColumnName("Amount");
+            entity.Property(e => e.Amount).HasPrecision(15);
+            entity.Property(e => e.Taxes).HasPrecision(15);
 
             entity.HasOne(d => d.Item).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.ItemId)
@@ -257,6 +227,7 @@ public partial class ComeyaContext : DbContext
             entity.Property(e => e.Background).HasMaxLength(500);
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.Logo).HasMaxLength(500);
+            entity.Property(e => e.MarketingImg).HasMaxLength(200);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Rating).HasPrecision(2, 1);
         });
@@ -267,10 +238,13 @@ public partial class ComeyaContext : DbContext
 
             entity.ToTable("user");
 
+            entity.HasIndex(e => e.ActivationCode, "ActivationCode_UNIQUE").IsUnique();
+
             entity.HasIndex(e => e.Email, "UQ_Email_Unique").IsUnique();
 
             entity.HasIndex(e => e.StatusId, "user_ibfk_1");
 
+            entity.Property(e => e.ActivationCode).HasMaxLength(10);
             entity.Property(e => e.Balance)
                 .HasPrecision(14, 3)
                 .HasDefaultValueSql("'100.000'");

@@ -24,7 +24,6 @@ namespace ComeYaAPI.UnitOfWork
             Items = new ItemRepository(context, mapper);
             Restaurants = new RestaurantRepository(context,mapper);
             Orders = new OrderRepository(context,mapper);
-            Bills = new BillRepository(context,mapper);
             OrderItem = new OrderItemRepository(context,mapper);
             OrderHistory = new OrderHistoryRepository(context,mapper);
 
@@ -36,7 +35,6 @@ namespace ComeYaAPI.UnitOfWork
         public ICartRepository Cart {  get; private set; }
         public IOrderItemRepository OrderItem { get; private set; }
         public IOrderRepository Orders { get; private set; }
-        public IBillRepository Bills { get; private set; }
         public IOrderHistoryRepository OrderHistory { get; private set; }
         public async Task Complete()
         {

@@ -5,7 +5,7 @@ namespace ComeYaAPI.Interfaces
 {
     public interface IOrderRepository:IRepository<Order>
     {
-        Task<int> Add();
+        Task<int> Add(string receipt );
         Task<Order> GetOrder(string code);
     }
 }

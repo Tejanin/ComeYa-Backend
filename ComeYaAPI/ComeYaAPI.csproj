@@ -33,9 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\McDonalds\Combos\" />
-    <Folder Include="Resources\McDonalds\Items\" />
-    <Folder Include="Resources\McDonalds\Restaurant\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

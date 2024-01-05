@@ -23,19 +23,18 @@ public class CheckoutController : ControllerBase
 {
     private readonly IStripeService _stripe;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly OrderService _orderService;
     private readonly IWebToken _webToken;
     private readonly ILogger<CheckoutController> _logger;
     const string endpointSecret = "whsec_fe44b56bb936c11723371fab977ba989fd52627f19cc26b23c0dae61b1bb4f27";
     
-    public CheckoutController( IStripeService stripe, IUnitOfWork unitOfWork, IWebToken webToken, ILogger<CheckoutController> logger, OrderService orderService)
+    public CheckoutController( IStripeService stripe, IUnitOfWork unitOfWork, IWebToken webToken, ILogger<CheckoutController> logger)
     {
         
         _stripe = stripe; 
         _unitOfWork = unitOfWork;
         _logger = logger;
         _webToken = webToken;
-       _orderService= orderService;
+       
 
        // userId = _webToken.ValidateTokenUserId(User);
     }
@@ -54,11 +53,12 @@ public class CheckoutController : ControllerBase
 
             foreach (var item in product)
             {
+                
                 var lineItem = new SessionLineItemOptions
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmountDecimal = item.Price * item.Quantity * 100, // Precio en centavos e impuestos incluidos
+                        UnitAmountDecimal = Math.Round(item.Price * 1.18M * 100), // Precio en centavos e impuestos incluidos
                         Currency = "DOP",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -131,14 +131,15 @@ public class CheckoutController : ControllerBase
             try
             {
                 _unitOfWork.BeginTransaction();
-                int orderId = await _unitOfWork.Orders.Add();
+                int orderId = await _unitOfWork.Orders.Add(receipt);
                 amount = _unitOfWork.OrderItem.AddOrderItem(orderId,id,cartItems.Entity);
                 await _unitOfWork.OrderHistory.AddOrderHistory(id,orderId);
-                await _unitOfWork.Bills.AddBill(receipt,orderId,id,amount);
+                
                 
                 await _unitOfWork.Cart.DeleteAllItems(id);
                 await _unitOfWork.Complete();
-                
+                _unitOfWork.Dispose();
+
                 return Ok();
             }
             catch (Exception ex)

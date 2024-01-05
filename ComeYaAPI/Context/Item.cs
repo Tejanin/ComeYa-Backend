@@ -21,6 +21,10 @@ public partial class Item
 
     public string Name { get; set; } = null!;
 
+    public string? MarketingImg1 { get; set; }
+
+    public string? MarketingImg2 { get; set; }
+
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
     public virtual Food? Food { get; set; }

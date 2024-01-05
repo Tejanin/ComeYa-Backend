@@ -25,11 +25,11 @@ namespace ComeYaAPI.Repositories
             return order;
         }
 
-        public async Task<int> Add()
+        public async Task<int> Add(string receipt)
         {
             Guid guid = Guid.NewGuid();
             string code = $"ORDER-{guid.ToString("N").Substring(0, 9)}";
-            var order = new Order { OrderCode = code };
+            var order = new Order { OrderCode = code, Receipt = receipt};
              _context.Add(order);
             _context.SaveChanges();
             var newOrder = await GetOrder(code);

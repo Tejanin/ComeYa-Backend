@@ -14,6 +14,8 @@ namespace ComeYaAPI.Interfaces
         Task<bool> CheckIfEmpty(int id);
         Task DeleteItem(DeleteCartItemDTO itemDTO);
         Task DeleteAllItems(int id);
+
+        Task<decimal> GetCartBalance(int id);
         
 
     }

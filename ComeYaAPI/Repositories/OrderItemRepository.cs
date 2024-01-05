@@ -31,7 +31,9 @@ namespace ComeYaAPI.Repositories
                 {
                     OrderId = orderId,
                     ItemId = item.Id,
-                    Amount = item.Amount,
+                    Amount = Math.Round(item.Amount,2),
+                    Quantity = item.Quantity,
+                    Taxes = Math.Round(item.Amount*0.18M,2)
                     
                 });
                 balance += item.Amount;

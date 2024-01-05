@@ -121,5 +121,18 @@ namespace ComeYaAPI.Repositories
             var items = await FindAllAsync(x => x.UserId == id);
             DeleteRange(items);
         }
+
+        public async Task<decimal> GetCartBalance(int id)
+        {
+            var cart = await GetCartItems(id);
+            decimal balance=0;
+
+            foreach(var item in cart.Entity)
+            {
+                balance += item.Amount;
+            }
+
+            return balance;
+        }
     }
 }

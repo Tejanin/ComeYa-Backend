@@ -10,13 +10,13 @@ namespace ComeYaAPI.Services
         { 
             _configuration = configuration;
         }
-        public async Task SendEmail(string toEmail, int id)
+        public async Task SendEmail(string toEmail, string code)
         {
             string htmlBody = "<html><body>";
             htmlBody += "<h1>Esto es un título</h1>";
             htmlBody += "<p>Este es un párrafo de ejemplo.</p>";
             htmlBody += $"<p>Puedes hacer clic en el siguiente enlace:</p>";
-            htmlBody += $"<a href='javascript:void(0);' onclick='sendPatchRequest({id})'>Realizar PATCH</a>";
+            htmlBody += $"<a href='javascript:void(0);' onclick='sendPatchRequest({code})'>Realizar PATCH</a>";
             htmlBody += "<script>";
             htmlBody += "function sendPatchRequest(parametro) {";
             htmlBody += "  var xhr = new XMLHttpRequest();";

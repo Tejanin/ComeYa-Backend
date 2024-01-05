@@ -11,7 +11,9 @@ public partial class Order
 
     public int OrderStatusId { get; set; }
 
-    public virtual Bill? Bill { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    public string Receipt { get; set; } = null!;
 
     public virtual OrderHistory? OrderHistory { get; set; }
 

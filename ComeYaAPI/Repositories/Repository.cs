@@ -116,15 +116,16 @@ namespace ComeYa.Repositories
         {
             IQueryable<TProperty> query = _context.Set<TProperty>();
 
+            if (expression != null)
+            {
+                query = query.Where(expression);
+            }
             foreach (var includeProperty in includeProperties)
             {
                 query = query.Include(includeProperty);
             }
 
-            if (expression != null)
-            {
-                query = query.Where(expression);
-            }
+            
 
             return await query.FirstOrDefaultAsync();
         }
@@ -133,5 +134,7 @@ namespace ComeYa.Repositories
         {
             _context.Set<TEntity>().Add(entity);
         }
+
+       
     }
 }
