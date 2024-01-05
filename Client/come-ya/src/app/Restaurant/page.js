@@ -1,0 +1,134 @@
+import { Card, CardBody, Heading, Text, Image, Stack, Box, Button } from '@chakra-ui/react'
+import styles from "./Restaurant.module.css"
+import { StarRateRounded } from "@mui/icons-material"
+import ImageLoading from "../../components/ImageLoading/ImageLoading"
+import Link from "next/link"
+import { Skeleton } from "@chakra-ui/react"
+
+const restaurantes = [
+    {
+      Id: 1,
+      Name: "Burger King",
+      Logo: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
+      Description: "Burger King es una cadena de restaurantes de comida rápida que se especializa en hamburguesas y otros productos similares.  Actualmente, Burger King es la segunda cadena de hamburguesas más grande de los Estados Unidos.",
+      Rating: 4.5,
+    },
+    {
+      Id: 2,
+      Name: "McDonald's",
+      Logo: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
+      Description: "Burger King es una cadena de restaurantes de comida rápida que se especializa en hamburguesas y otros productos similares.  Actualmente, Burger King es la segunda cadena de hamburguesas más grande de los Estados Unidos.",
+      Rating: 4.2,
+    },
+    {
+      Id: 3,
+      Name: "Pizza Hut",
+      Logo: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
+      Description: "Pizza Hut es una cadena internacional de restaurantes de pizzas y comida italiana. Ofrece una variedad de pizzas, pasta, ensaladas y otros platos deliciosos.",
+      Rating: 4.9,
+    },
+    {
+      Id: 4,
+      Name: "Starbucks",
+      Logo: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
+      Description: "Starbucks es una cadena global de cafeterías que ofrece una amplia variedad de bebidas a base de café, té, y aperitivos. Es conocida por su ambiente acogedor y café de alta calidad.",
+      Rating: 4.7,
+    },
+    {
+      Id: 4.0,
+      Name: "Subway",
+      Logo: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
+      Description: "Subway es una cadena de restaurantes especializada en la venta de sándwiches y ensaladas. Es conocida por su opción de personalizar los sándwiches según las preferencias del cliente.",
+      Rating: 4.1,
+    },
+    {
+      Id: 5,
+      Name: "KFC, Kentucky Fried Chicken ffffffffffff fffffffff",
+      Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
+      Description: "KFC, Kentucky Fried Chicken, es una cadena de restaurantes de comida rápida especializada en pollo frito. Sus recetas originales y crujientes son muy populares en todo el mundo.",
+      Rating: 4.3,
+    },
+    {
+      Id: 6,
+      Name: "Domino's Pizza",
+      Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
+      Description: "Domino's Pizza es una cadena de pizzerías conocida por su entrega rápida y su variedad de pizzas. Ofrece opciones de personalización y entrega a domicilio.",
+      Rating: 2.9,
+    },
+    {
+      Id: 7,
+      Name: "Taco Bell",
+      Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
+      Description: "Taco Bell es una cadena de restaurantes de comida rápida especializada en comida tex-mex, como tacos, burritos y nachos. Es conocida por su menú sabroso y asequible.",
+      Rating: 4.0,
+    },
+    {
+      Id: 8,
+      Name: "Starbucks",
+      Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
+      Description: "Starbucks es una cadena global de cafeterías que ofrece una amplia variedad de bebidas a base de café, té y aperitivos. Es conocida por su ambiente acogedor y café de alta calidad.",
+      Rating: 4.7,
+    },
+    {
+      Id: 9,
+      Name: "Dunkin'",
+      Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
+      Description: "Dunkin' es una cadena de cafeterías y donas conocida por sus cafés, donas y productos horneados. Ofrece una selección variada de bebidas y opciones para el desayuno.",
+      Rating: 3.2,
+    },
+    {
+      Id: 10,
+      Name: "Chick-fil-A",
+      Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
+      Description: "Chick-fil-A es una cadena de restaurantes de comida rápida especializada en pollo. Es famosa por sus sándwiches de pollo y opciones de menú de alta calidad.",
+      Rating: 4.6,
+    },
+]
+
+export default function Restaurants() {
+    return(
+      <div className={styles.mainConteiner}>
+        <div className={styles.tittle}>
+          <Heading justifyContent={"flex-start"}>Restaurantes</Heading>
+        </div>
+        <div className={styles.restaurantsGrid}>
+          {restaurantes.map((restaurant, index) => {
+            return(
+              <div key={index}>
+                <Link href={`/Restaurant/${restaurant.Id}`}>
+                  <Card
+                    direction={{ base: 'column', sm: 'row' }}
+                    overflow='hidden'
+                    variant='elevated'
+                    transition="box-shadow 0.3s ease-in-out"
+                    _hover={{
+                      boxShadow: 'lg', // Aumenta la sombra en el hover
+                    }}
+                  >
+                    <Image
+                      objectFit='cover'
+                      maxW={{ base: '100%', sm: '200px' }}
+                      src={restaurant.Logo}
+                      alt={`Imagen de ${restaurant.Name}`}
+                    />
+                    <Stack>
+                      <CardBody>
+                        <Box display='flex' justifyContent='space-between' alignItems='center'>
+                          <Heading size='md'>{restaurant.Name}</Heading>
+                          <Box display='flex' flexDirection='row' alignItems='center'>
+                            <StarRateRounded sx={{ color: "#ffc107" }} />
+                            <Text py='2'>{restaurant.Rating}</Text>
+                          </Box> 
+                        </Box>
+                        <Text py='2'>{restaurant.Description}</Text>
+                      </CardBody>
+                    </Stack>
+                  </Card>
+                </Link>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+}

@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+
+.formulario {
+	min-width: 30vw;
+	border-radius: 5px;
+	max-height: 80vh; /* Altura máxima del contenido scrollable dentro del modal */
+  	overflow-y: auto; /* Habilitar el desplazamiento vertical si el contenido es demasiado grande */
+	scrollbar-color: transparent transparent;
+	padding: 20px;
+}
+
+.formulario > div {
+	margin-bottom: 1em;
+}
+
+.formulario label {
+	display: block;
+	font-weight: 600;
+	font-size: 14px;
+	color: darkgoldenrod;
+}
+
+.formulario input,
+.formulario textarea {
+	font-family: 'Open Sans', sans-serif;
+	width: 100%;
+	border-radius: 5px;
+	border: 2px solid #e2e2e2;
+	font-size: 18px;
+	padding: 5px;
+	color: #1f1f1f;
+}
+
+.formulario input:focus {
+	outline: none;
+	border: 2px solid #9c9423;
+}
+
+.formulario .error {
+	color: #e92b2d;
+	font-weight: 500;
+	font-size: 12px;
+}
+
+.formulario button[type="submit"] {
+	display: block;
+	background: rgb(222, 163, 12);
+	font-weight: 600;
+	font-family: 'Open Sans', sans-serif;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	padding: 10px;
+	border-radius: 5px;
+	color: #fff;
+	font-size: 16px;
+	transition: .3s ease all;
+}
+
+.formulario button[type="submit"]:hover {
+	background: darkgoldenrod;
+}
+
+.formulario .exito {
+	text-align: center;
+	font-size: 14px;
+	padding-top: 20px;
+	color: #02a802;
+}
+
+.formulario input[type="radio"] {
+	width: auto;
+}

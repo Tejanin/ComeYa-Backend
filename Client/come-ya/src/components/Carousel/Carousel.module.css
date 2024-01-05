@@ -1,0 +1,29 @@
+.buttons {
+	display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.item {
+    margin: 1em;
+}
+
+.topConteiner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.verTodo {
+    text-decoration: underline;
+    margin-right: 1em;
+}
+
+.info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

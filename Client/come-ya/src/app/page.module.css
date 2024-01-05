@@ -1,3 +1,47 @@
+.homeConteiner {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.mainCarousel {
+  width: 90vw;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.categoriesConteiner {
+  width: 80vw;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.category {
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.categoryBottomSide {
+  width: 80vw;
+}
+
+
+
+
+
+
+
+
 .main {
   display: flex;
   flex-direction: column;
@@ -209,21 +253,3 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .vercelLogo {
-    filter: invert(1);
-  }
-
-  .logo {
-    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
-  }
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
