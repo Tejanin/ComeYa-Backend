@@ -52,6 +52,16 @@ namespace ComeYa.Repositories
             return await _context.Set<TEntity>().ToListAsync();
         }
 
+        public IEnumerable<TEntity> GetAllRandom(IEnumerable<TEntity> entities)
+        {
+            var randEntities = entities
+            .OrderBy(o => Guid.NewGuid())
+            .Take(10)
+            .ToList();
+
+            return randEntities;
+        }
+
         public async Task<IEnumerable<TEntity>> GetAllIncluding<TEntity>(Expression<Func<TEntity, bool>>? expression,
         params Expression<Func<TEntity, object>>[] includeProperties) where TEntity : class
         {
@@ -83,8 +93,6 @@ namespace ComeYa.Repositories
         public IEnumerable<TEntity> Paginate(IEnumerable<TEntity> entities, int page, decimal recordPerPage)
         {
             if(page == 0)return entities;
-            decimal recordQty = entities.Count();
-            int pageCount = Convert.ToInt32(Math.Ceiling(recordQty / recordPerPage));
 
             var records = entities
                 .Skip((page - 1) * ((int)recordPerPage))

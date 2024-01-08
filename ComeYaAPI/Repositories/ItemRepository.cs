@@ -23,7 +23,7 @@ namespace ComeYaAPI.Repositories
            
         }
 
-        public async Task<EntityListResult<ReadItemDTO>> GetAllItems(string? type, string? category, decimal price , int page, ulong combo, int restaurant)
+        public async Task<EntityListResult<ReadItemDTO>> GetAllItems(string? type, string? category, decimal price , int page, ulong combo, int restaurant, int rand)
         {
             var filters = new List<Func<Item, bool>>();
             var result = new EntityListResult<ReadItemDTO>();
@@ -33,7 +33,7 @@ namespace ComeYaAPI.Repositories
             if (combo != 2) filters.Add(x=> x.Combo == combo);
             if (restaurant != 0) filters.Add(x => x.Restaurant.Id == restaurant);
             if(!string.IsNullOrEmpty(category)) filters.Add(x=> x.Food.CategoryType.Description==category); 
-
+            
 
             var items = await GetAllIncluding<Item>(null,
                 x => x.Food,
@@ -41,7 +41,9 @@ namespace ComeYaAPI.Repositories
                 x=> x.Food.FoodType,
                 x=> x.Restaurant
                 );
+            
             var filteredItems = Filter(items,filters);
+            if (rand != 0) filteredItems = GetAllRandom(filteredItems);
             var pagedFilteredRecords = Paginate(filteredItems,page,4M);
 
             var itemsDTOList = pagedFilteredRecords.Select(x => new ReadItemDTO
@@ -52,6 +54,7 @@ namespace ComeYaAPI.Repositories
                 Restaurant = x.Restaurant.Name,
                 Image = x.Image,
                 Name = x.Name,
+                Combo = x.Combo,
                 Food = x.Food.FoodType.Description,
                 Category = x.Food.CategoryType.Description,
                 MarketingImg1= x.MarketingImg1,
@@ -88,6 +91,7 @@ namespace ComeYaAPI.Repositories
                 Description = item.Description,
                 Restaurant = item.Restaurant.Name,
                 Image = item.Image,
+                Combo = item.Combo,
                 Name = item.Name,
                 Food = item.Food.FoodType.Description,
                 Category = item.Food.CategoryType.Description

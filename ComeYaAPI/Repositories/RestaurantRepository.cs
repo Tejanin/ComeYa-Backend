@@ -5,7 +5,10 @@ using ComeYaAPI.Interfaces;
 using ComeYaAPI.Models.DTOs.ItemDTOs;
 using ComeYaAPI.Models.DTOs.RestaurantDTOs;
 using ComeYaAPI.Models.ResultsMessages;
+using Microsoft.EntityFrameworkCore;
+using Nest;
 using Stripe;
+using Stripe.Climate;
 
 namespace ComeYaAPI.Repositories
 {
@@ -69,6 +72,53 @@ namespace ComeYaAPI.Repositories
             var restaurantDTO = _mapper.Map<ReadRestaurantDTO>(restaurant);
             result.Entity = restaurantDTO;  
             return result;
+        }
+
+        public async Task<EntityResult<ReadMenuDTO>> GetMenu(int id)
+        {
+            var restaurant = await FindAsync(x => x.Id == id);
+
+            await _context.Entry(restaurant)
+                .Collection(o => o.Items)
+                .Query()
+                .Include(oi=> oi.Food)
+                .Include(oi=> oi.Food.CategoryType)
+                .Include(oi => oi.Food.FoodType)
+                .LoadAsync();
+            var readMenuDTO = new ReadMenuDTO
+            {
+                Id = id,
+                Name= restaurant.Name,
+                Description = restaurant.Description,
+                Logo = restaurant.Logo,
+                Rating = restaurant.Rating,
+                MarketingImg = restaurant.MarketingImg,
+                Background = restaurant.Background,
+                Items = restaurant.Items.Select(i => new ReadItemDTO
+                {
+                    
+                    Id = i.Id,
+                    Description = i.Description,
+                    Name = i.Name,
+                    Price = i.Price,
+                    Image = i.Image,
+                    MarketingImg1 = i.MarketingImg1,
+                    MarketingImg2 = i.MarketingImg2,
+                    Restaurant = restaurant.Name,
+                    Food = i.Food.FoodType.Description,
+                    Category = i.Food.CategoryType.Description,
+
+
+                }).ToList()
+
+            };
+
+            var result = new EntityResult<ReadMenuDTO>();
+            result.Entity = readMenuDTO;
+            result.Message = $"Restaurante {id}";
+            result.StatusCode = 200 ;   
+            return result;
+
         }
     }
 }

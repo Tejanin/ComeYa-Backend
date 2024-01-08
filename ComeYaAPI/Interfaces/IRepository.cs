@@ -11,7 +11,7 @@ namespace ComeYa.Interfaces
         Task<IEnumerable<TEntity>> GetAllIncluding<TEntity>(Expression<Func<TEntity, bool>>? expression,
         params Expression<Func<TEntity, object>>[] includeProperties) where TEntity : class;
         Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression);
-
+        IEnumerable<TEntity> GetAllRandom(IEnumerable<TEntity> entities);
         Task<TEntity> FindIncluding<TEntity>(Expression<Func<TEntity, bool>>? expression,
         params Expression<Func<TEntity, object>>[] includeProperties) where TEntity : class;
 
