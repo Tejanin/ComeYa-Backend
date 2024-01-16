@@ -4,43 +4,6 @@ import styles from './SignInForm.module.css'
 import { Button } from '@mui/material';
 
 const SignUp = ({ onClose }) => {
-  /*const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aquí puedes realizar acciones con los datos del formulario, como enviarlos a un servidor
-    console.log('Datos del formulario:', formData);
-    alert('Datos del formulario:', formData);
-    // Cerrar el modal
-    onClose();
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Nombre:
-        <input type="text" name="name" value={formData.name} onChange={handleChange} />
-      </label>
-      <label>
-        Correo electrónico:
-        <input type="email" name="email" value={formData.email} onChange={handleChange} />
-      </label>
-      <label>
-        Mensaje:
-        <textarea name="message" value={formData.message} onChange={handleChange} />
-      </label>
-      <button type="submit">Enviar</button>
-    </form>
-  );*/
-
 
   const[ChangeOnSubmit, setChangeOnSubmit] = useState(false);
 
