@@ -5,24 +5,6 @@ import { Button } from '@mui/material';
 import { useToast } from '@chakra-ui/react'
 
 const SignUpForm = ({ onClose }) => {
-  /*const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aquí puedes realizar acciones con los datos del formulario, como enviarlos a un servidor
-    console.log('Datos del formulario:', formData);
-    alert('Datos del formulario:', formData);
-    // Cerrar el modal
-    onClose();
-  };*/
 
   const[ChangeOnSubmit, setChangeOnSubmit] = useState(false);
   const toast = useToast()
