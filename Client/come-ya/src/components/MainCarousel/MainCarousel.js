@@ -85,6 +85,7 @@ export default class MainCarousel extends Component {
                               borderRadius='5%'
                               objectFit='cover'
                               loading={<ImageLoading/>} 
+                              fallbackSrc={'https://via.placeholder.com/500x300'}
                             />
                           </div>
                         </div>
