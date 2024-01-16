@@ -2,16 +2,20 @@
 import * as React from 'react';
 import { useState} from 'react'
 import styles from './RestaurantName.module.css'
-import { Image, Heading, Text, Box, Card, CardHeader, CardBody, CardFooter, Stack, Divider, ButtonGroup, Button, Badge } from '@chakra-ui/react'
+import { Image, Heading, Text, Box, Card, Badge } from '@chakra-ui/react'
 import PropTypes from 'prop-types';
-import Slider, { SliderThumb } from '@mui/material/Slider';
+import Slider from '@mui/material/Slider';
 import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import { FormControlLabel, Checkbox } from '@mui/material';
-import { StarRateRounded } from "@mui/icons-material"
-import { Replay } from "@mui/icons-material"
+import { StarRateRounded, Replay } from "@mui/icons-material"
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import WindowDimensions from '../../../components/WindowDimensions/WindowDimensions'
+import stylesModal from '../../../components/OpenModal/OpenModal.module.css'
+import ProductView from '../../../components/ProductView/ProductView';
+import { useSearchParams } from 'next/navigation';
+
 
 let theme = createTheme({
   palette: {
@@ -46,20 +50,23 @@ const iOSBoxShadow =
 const marks = [
   {
     value: 0,
+    label: '$100'
   },
   {
-    value: 20,
+    value: 33.3,
+    label: '$400'
   },
   {
-    value: 37,
+    value: 66.6,
+    label: '$700'
   },
   {
-    value: 95,
+    value: 100,
+    label: '$1000+'
   },
 ];
 
 const IOSSlider = styled(Slider)(({ theme }) => ({
-  //color: theme.palette.mode === 'dark' ? '#3880ff' : '#3880ff',
   height: 2,
   padding: '15px 0',
   '& .MuiSlider-thumb': {
@@ -112,8 +119,43 @@ const IOSSlider = styled(Slider)(({ theme }) => ({
   },
 }));
 
-
 export default function RestaurantMenu({params}) {
+  
+
+  const openModal = (item) => {
+    setProductInfo(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  
+
+  const Modal = ({ isOpen, onClose, ...props }) => {
+    const handleContainerClick = (e) => {
+      // Verificar si el clic se realizó fuera del contenido del modal
+      if (e.target.classList.contains(styles.modalOverlay)) {
+        onClose();
+      }
+    };
+
+    return (
+      <>
+        {isOpen && (
+          <div className={stylesModal.modalOverlay} onClick={handleContainerClick}>
+            <div className={stylesModal.modal}>
+              <button><CloseRoundedIcon onClick={onClose}/></button>
+              <ProductView {...productInfo} onClose={onClose}/>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+
   const items = [
     {
       id: 1,
@@ -326,6 +368,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
       Description: "Burger King es una cadena de restaurantes de comida rápida que se especializa en hamburguesas y otros productos similares.  Actualmente, Burger King es la segunda cadena de hamburguesas más grande de los Estados Unidos.",
       Rating: 4.5,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 2,
@@ -333,6 +376,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
       Description: "Burger King es una cadena de restaurantes de comida rápida que se especializa en hamburguesas y otros productos similares.  Actualmente, Burger King es la segunda cadena de hamburguesas más grande de los Estados Unidos.",
       Rating: 4.2,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 3,
@@ -340,6 +384,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
       Description: "Pizza Hut es una cadena internacional de restaurantes de pizzas y comida italiana. Ofrece una variedad de pizzas, pasta, ensaladas y otros platos deliciosos.",
       Rating: 4.9,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 4,
@@ -347,6 +392,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
       Description: "Starbucks es una cadena global de cafeterías que ofrece una amplia variedad de bebidas a base de café, té, y aperitivos. Es conocida por su ambiente acogedor y café de alta calidad.",
       Rating: 4.7,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 5,
@@ -354,6 +400,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
       Description: "KFC, Kentucky Fried Chicken, es una cadena de restaurantes de comida rápida especializada en pollo frito. Sus recetas originales y crujientes son muy populares en todo el mundo.",
       Rating: 4.3,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 6,
@@ -361,6 +408,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
       Description: "Domino's Pizza es una cadena de pizzerías conocida por su entrega rápida y su variedad de pizzas. Ofrece opciones de personalización y entrega a domicilio.",
       Rating: 2.9,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 7,
@@ -368,6 +416,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
       Description: "Taco Bell es una cadena de restaurantes de comida rápida especializada en comida tex-mex, como tacos, burritos y nachos. Es conocida por su menú sabroso y asequible.",
       Rating: 4.0,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 8,
@@ -375,6 +424,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
       Description: "Subway es una cadena de restaurantes especializada en la venta de sándwiches y ensaladas. Es conocida por su opción de personalizar los sándwiches según las preferencias del cliente.",
       Rating: 4.1,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 9,
@@ -382,6 +432,7 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
       Description: "Dunkin' es una cadena de cafeterías y donas conocida por sus cafés, donas y productos horneados. Ofrece una selección variada de bebidas y opciones para el desayuno.",
       Rating: 3.2,
+      Background: "https://bit.ly/2Z4KKcF",
     },
     {
       Id: 10,
@@ -389,215 +440,162 @@ export default function RestaurantMenu({params}) {
       Logo: "https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60",
       Description: "Chick-fil-A es una cadena de restaurantes de comida rápida especializada en pollo. Es famosa por sus sándwiches de pollo y opciones de menú de alta calidad.",
       Rating: 4.6,
+      Background: "https://bit.ly/2Z4KKcF",
     },
   ];
 
 
-
-    const property = {
-        imageUrl: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-        imageAlt: 'Rear view of modern home with pool',
-        beds: 3,
-        baths: 2,
-        title: 'Modern home in city center in the heart of historic Los Angeles',
-        formattedPrice: '$1,900.00',
-        reviewCount: 34,
-        rating: 4,
-      }
-
-
   const restaurant = restaurantes.find(item => item.Id == params.RestaurantName);
 
-  const [sliderValue, setSliderValue] = useState(50)
+  const [sliderValue, setSliderValue] = useState(100)
 
-  const labelStyles = {
-    mt: '2',
-    ml: '-2.5',
-    fontSize: 'sm',
+  const searchParams = useSearchParams();
+  const id = searchParams.get('item');
+  let itemId;
+  let itemObject;
+  let modalState;
+  let info;
+  if (id !== null) {
+    itemId = id;
+    //Busca el primer objeto con id coincidente al traido desde el homePage
+    itemObject = items.find(item => item.id == itemId);
+
+    // Inicializacion de estados de haber query
+    modalState = true;
+    info = itemObject;
+  } else {
+    modalState = false;
+    info = {};
   }
-  
+
+  const [isModalOpen, setIsModalOpen] = useState(modalState);
+
+  const [productInfo, setProductInfo] = useState(info);
 
   const windowDimensions = WindowDimensions();
 
-    return(
-        <div className={styles.mainConteiner}>
-            <Image 
-              src='https://bit.ly/2Z4KKcF'
-              width='100vw'
-              height={200}
-              objectFit='cover'
-              fallbackSrc={`https://via.placeholder.com/${windowDimensions.width}x200`}
-            />
-
-            <div className={styles.tittle}>
-              {restaurant ? (
-                <>
-                  <Heading justifyContent={"flex-start"}>{restaurant.Name}</Heading>
-                  <Box display='flex' flexDirection='row' alignItems='center'>
-                    <StarRateRounded sx={{ color: "#ffc107" }} />
-                    <Text py='2'>4.2</Text>
-                  </Box> 
-                </>
-              ):null}
-            </div>
-
-
-            <Box className={styles.bodyConteiner} flexDirection={{ base: 'column', sm: 'row' }}>
-                <div className={styles.filter}>
-                  {/*Icono de limpiar*/}
-                  <Box display={'flex'} justifyContent={'flex-end'}>
-                    <ThemeProvider theme={theme}>
-                      <Tooltip title="Reestablecer" placement='top' arrow>
-                        <button>
-                          <Replay sx={{ color: '#C62828' }} />
-                        </button>
-                      </Tooltip>
-                    </ThemeProvider>
-                  </Box>
-                  <Heading as='h4' size='md'>Precios</Heading>
-                    <Box>
-                      <ThemeProvider theme={theme}>
-                        <IOSSlider
-                          aria-label="ios slider"
-                          defaultValue={60}
-                          marks={marks}
-                          valueLabelDisplay="auto"
-                        />
-                      </ThemeProvider>
-                    </Box>
-
-
-                  {/*Slider Bar  
-                    <Box pt={6} pb={2}>
-                      <Slider aria-label='slider-ex-6' onChange={(val) => setSliderValue(val)}>
-                        <SliderMark value={0} {...labelStyles}>
-                          0%
-                        </SliderMark>
-                        <SliderMark value={25} {...labelStyles}>
-                          25%
-                        </SliderMark>
-                        <SliderMark value={50} {...labelStyles}>
-                          50%
-                        </SliderMark>
-                        <SliderMark value={75} {...labelStyles}>
-                          75%
-                        </SliderMark>
-                        <SliderMark value={100} {...labelStyles}>
-                          100%
-                        </SliderMark>
-                        <SliderMark
-                          value={sliderValue}
-                          textAlign='center'
-                          bg='blue.500'
-                          color='white'
-                          mt='-10'
-                          ml='-5'
-                          w='12'
-                        >
-                          {sliderValue}%
-                        </SliderMark>
-                        <SliderTrack>
-                          <SliderFilledTrack />
-                        </SliderTrack>
-                        <SliderThumb />
-                      </Slider>
-                    </Box>
-                    */}
-
-                  <Heading as='h4' size='md'>Tipo</Heading>
+  return(
+    <div className={styles.mainConteiner}>
+      <Modal isOpen={isModalOpen} onClose={closeModal} />
+          <Image 
+            src={restaurant.Background}
+            width='100vw'
+            height={200}
+            objectFit='cover'
+            fallbackSrc={`https://via.placeholder.com/${windowDimensions.width}x200`}
+          />
+          <div className={styles.tittle}>
+            {restaurant ? (
+              <>
+                <Heading justifyContent={"flex-start"}>{restaurant.Name}</Heading>
+                <Box display='flex' flexDirection='row' alignItems='center'>
+                  <StarRateRounded sx={{ color: "#ffc107" }} />
+                  <Text py='2'>{restaurant.Rating}</Text>
+                </Box> 
+              </>
+            ):null}
+          </div>
+          <Box className={styles.bodyConteiner} flexDirection={{ base: 'column', sm: 'row' }}>
+              <div className={styles.filter}>
+                <Box display={'flex'} justifyContent={'flex-end'}>
                   <ThemeProvider theme={theme}>
-                    <FormControlLabel 
-                      control={<Checkbox sx={{
-                        color: '#D81B60',
-                        '&.Mui-checked': {
-                          color: '#C62828',
-                        },
-                      }}/>} label="Vegetariana"/>
-                    <FormControlLabel 
-                    control={<Checkbox sx={{
-                      color: '#D81B60',
-                      '&.Mui-checked': {
-                        color: '#C62828',
-                      },
-                    }}/>} label="Vegana"/>
-                    <FormControlLabel 
-                    control={<Checkbox sx={{
-                      color: '#D81B60',
-                      '&.Mui-checked': {
-                        color: '#C62828',
-                      },
-                    }}/>} label="Bebida"/>
-                    <FormControlLabel 
-                    control={<Checkbox sx={{
-                      color: '#D81B60',
-                      '&.Mui-checked': {
-                        color: '#C62828',
-                      },
-                    }}/>} label="Marisco"/>
+                    {/*Boton de reestablecer filtros*/}
+                    <Tooltip title="Reestablecer" placement='top' arrow>
+                      <button>
+                        <Replay sx={{ color: '#C62828' }} />
+                      </button>
+                    </Tooltip>
                   </ThemeProvider>
-                  <Text>Vegetariana</Text>
-                  <Text>Vegana</Text>
-                  <Text>Bebida</Text>
-                  <Text>Marisco</Text>
+                </Box>
+                <Heading as='h4' size='md'>Precios</Heading>
+                  <div className={styles.slider}>
+                    <ThemeProvider theme={theme}>
+                      <IOSSlider
+                        aria-label="ios slider"
+                        defaultValue={100}
+                        step={33.4}
+                        marks={marks}
+                        valueLabelDisplay="off"
+                      />
+                    </ThemeProvider>
+                  </div>
+                <Heading as='h4' size='md'>Tipo</Heading>
+                <ThemeProvider theme={theme}>
+                  <FormControlLabel 
+                    control={<Checkbox  
+                      defaultChecked
+                      sx={{
+                      color: '#D81B60',
+                      '&.Mui-checked': {
+                        color: '#C62828',
+                      },
+                    }}/>} label="Vegetariana"/>
+                  <FormControlLabel 
+                  control={<Checkbox  
+                    defaultChecked
+                    sx={{
+                    color: '#D81B60',
+                    '&.Mui-checked': {
+                      color: '#C62828',
+                    },
+                  }}/>} label="Vegana"/>
+                  <FormControlLabel 
+                  control={<Checkbox  
+                    defaultChecked
+                    sx={{
+                    color: '#D81B60',
+                    '&.Mui-checked': {
+                      color: '#C62828',
+                    },
+                  }}/>} label="Bebida"/>
+                  <FormControlLabel 
+                  control={<Checkbox 
+                    defaultChecked
+                    sx={{
+                    color: '#D81B60',
+                    '&.Mui-checked': {
+                      color: '#C62828',
+                    },
+                  }}/>} label="Marisco"/>
+                </ThemeProvider>
+                
                   
-                    
-
-
-                </div>
-
-                <div className={styles.menu}>
-                  <Card maxW='sm' 
-                  overflow='hidden' 
-                  variant='elevated'
-                  transition="box-shadow 0.3s ease-in-out"
-                  _hover={{
-                    boxShadow: 'lg', // Aumenta la sombra en el hover>
-                  }}
-                  >
-                    <Image src={property.imageUrl} alt={property.imageAlt} />
-                    <Box p='4'>
-                      <Box display='flex' alignItems='center'>
-                          <Badge borderRadius='full' px='2' mr='2' colorScheme='teal'>
-                            Vegano
-                          </Badge>
-                          <Heading as='h4' size='md' fontWeight='semibold' noOfLines={1}>El Tremendo (Big Burrito)</Heading>
-                      </Box>
-                      <Box>
-                          <Text fontSize='lg'>DOP$1,900</Text>
-                      </Box>
-                    </Box>
-                  </Card>
-                    {items.map((item, index) => {
-                      return(
-                        <div key={index}>
-                          <Card 
-                            maxW='sm' 
-                            overflow='hidden' 
-                            variant='elevated'
-                            transition="box-shadow 0.3s ease-in-out"
-                            _hover={{
-                              boxShadow: 'lg', // Aumenta la sombra en el hover>
-                            }}
-                          >
-                            <Image src={property.imageUrl} alt={property.imageAlt} objectFit='cover'/>
-
-                            <Box p='4'>
-                              <Box display='flex' alignItems='center'>
-                                  <Badge borderRadius='full' px='2' mr='2' colorScheme='teal'>
-                                    {item.category}
-                                  </Badge>
-                                  <Heading as='h4' size='md' fontWeight='semibold' noOfLines={1}>{item.food}</Heading>
-                              </Box>
-                              <Box>
-                                <Text fontSize='lg'>DOP${item.price}</Text>
-                              </Box>
+              </div>
+              <div className={styles.menu}>
+                  {items.map((item, index) => {
+                    return(
+                      <div key={index} onClick={() => openModal(item)}>
+                        <Card 
+                          maxW='sm' 
+                          overflow='hidden' 
+                          variant='elevated'
+                          transition="box-shadow 0.3s ease-in-out"
+                          _hover={{
+                            boxShadow: 'lg', // Aumenta la sombra en el hover>
+                          }}
+                        >
+                          <Image 
+                            src={item.image} 
+                            alt={item.food} 
+                            objectFit='cover'
+                          />
+                          <Box p='4'>
+                            <Box display='flex' alignItems='center'>
+                                <Badge borderRadius='full' px='2' mr='2' colorScheme='teal'>
+                                  {item.category}
+                                </Badge>
+                                <Heading as='h4' size='md' fontWeight='semibold' noOfLines={1}>{item.food}</Heading>
                             </Box>
-                          </Card>
-                        </div>
-                      )
-                    })}
-                </div>
-            </Box>
-        </div>
-    )
+                            <Box>
+                              <Text fontSize='lg'>DOP${item.price}</Text>
+                            </Box>
+                          </Box>
+                        </Card>
+                      </div>
+                    )
+                  })}
+              </div>
+          </Box>
+      </div>
+  )
 }
