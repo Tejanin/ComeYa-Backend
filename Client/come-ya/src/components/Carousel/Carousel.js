@@ -13,60 +13,76 @@ import styles from './Carousel.module.css'
 //Objeto de ejemplo
 const images = [
   {
-    label: 'Oakland Bay Bridge',
-    imgPath:
+    id: 1,
+    food: 'Oakland Bay Bridge',
+    image:
       'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
     price: 1200,
     restaurant: 'KFC',
+    restaurantId: 5,
   },
   {
-    label: 'Bird',
-    imgPath:
+    id: 2,
+    food: 'Bird',
+    image:
       'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
     price: 300,
     restaurant: 'Burger King',
+    restaurantId: 1,
   },
   {
-    label: 'Bali, Indonesia',
-    imgPath:
+    id: 3,
+    food: 'Bali, Indonesia',
+    image:
       'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
     price: 120,
-    restaurant: 'Jade Teriyaki',
+    restaurant: 'Starbucks',
+    restaurantId: 4,
   },
   {
-    label: 'Goč',
-    imgPath:
+    id: 4,
+    food: 'Goč',
+    image:
       'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
     price: 12,
     restaurant: 'Hummus Sabores del Desierto',
+    restaurantId: 10,
   },
   {
-    label: 'Oakland Bay Bridge, United States',
-    imgPath:
+    id: 5,
+    food: 'Oakland Bay Bridge, United States',
+    image:
       'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
     price: 12,
     restaurant: 'KFC',
+    restaurantId: 5,
   },
   {
-    label: 'Chicharrón Light Josefa Brea Chicharrón LightJosefaBrea',
-    imgPath:
+    id: 6,
+    food: 'Chicharrón Light Josefa Brea Chicharrón LightJosefaBrea',
+    image:
       'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
     price: 1222,
     restaurant: 'Chicharrón Light Josefa Brea Chicharrón LightJosefaBrea',
+    restaurantId: 10,
   },
   {
-    label: 'Bali, Indonesia',
-    imgPath:
+    id: 7,
+    food: 'Bali, Indonesia',
+    image:
       'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
     price: 12,
     restaurant: 'KFC',
+    restaurantId: 5,
   },
   {
-    label: 'Goč, Serbia',
-    imgPath:
+    id: 8,
+    food: 'Goč, Serbia',
+    image:
       'https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&w=400&h=250&q=60',
     price: 12,
     restaurant: 'ChicharrónLightJosefaBreaChicharrón LightJosefaBreaChicharrón Light Josefa BreaChicharrónLightJosefaBrea',
+    restaurantId: 10,
   },
 ];
 
@@ -151,6 +167,7 @@ const restaurants = [
 ]
 
 export default class Carousel extends Component {
+  
   constructor(props) {
       /*Props disponibles
           titulo = string
@@ -211,7 +228,7 @@ export default class Carousel extends Component {
                   {/*<Link href={`/${this.props.titulo}`}>
                     Ver todo
                   </Link>*/}
-                  <Link href="/Restaurant/">
+                  <Link href="/Restaurant">
                     Ver todo
                   </Link>
                 </button>
@@ -226,23 +243,24 @@ export default class Carousel extends Component {
               {restaurants.map((restaurant, index) => {
                 return (
                   <div key={index}>
-                    <div className={styles.item}>
-                      <Image
-                        src={restaurant.Logo}
-                        width={350}
-                        height={175}
-                        borderRadius={'5%'}
-                        objectFit='cover'
-                        loader={<ImageLoading />}
-                        alt={restaurant.Name} />
-                      <div className={styles.info}>
-                        <Text fontSize='xl' noOfLines={1}>{restaurant.Name}</Text>
-                        <Box display='flex' flexDirection='row' alignItems='flex-end'>
-                          <StarRateRounded sx={{ color: "#ffc107" }} />
-                          <Text>{restaurant.Rating}</Text>
-                        </Box> 
+                    <Link href={`/Restaurant/${restaurant.Id}`}> 
+                      <div className={styles.item}>
+                        <Image
+                          src={restaurant.Logo}
+                          width={350}
+                          height={175}
+                          borderRadius={'5%'}
+                          objectFit='cover'
+                          fallbackSrc={'https://via.placeholder.com/350x175'} />
+                        <div className={styles.info}>
+                          <Text fontSize='xl' noOfLines={1}>{restaurant.Name}</Text>
+                          <Box display='flex' flexDirection='row' alignItems='flex-end'>
+                            <StarRateRounded sx={{ color: "#ffc107" }} />
+                            <Text>{restaurant.Rating}</Text>
+                          </Box> 
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 );
               })}
@@ -259,7 +277,10 @@ export default class Carousel extends Component {
                   {/*<Link href={`/${this.props.titulo}`}>
                     Ver todo
                   </Link>*/}
-                  <Link href="/Search/">
+                  <Link href={{
+                    pathname: '/Search',
+                    query: { search: this.props.titulo }
+                  }}>
                     Ver todo
                   </Link>
                 </button>
@@ -272,24 +293,30 @@ export default class Carousel extends Component {
               </div>
             </div>
             <Slider ref={c => (this.slider = c)} {...settings}>
-              {images.map((image, index) => {
+              {images.map((item, index) => {
                 return (
                   <div key={index}>
-                    <div className={styles.item}>
-                      <Image
-                        src={image.imgPath}
-                        width={350}
-                        height={175}
-                        borderRadius={'5%'}
-                        objectFit='cover'
-                        loader={<ImageLoading />}
-                        alt={image.label} />
-                      <Text fontSize='xl' noOfLines={1}>{image.label}</Text>
-                      <div className={styles.info}>
-                        <Text fontSize='sm' noOfLines={1}>{image.restaurant}</Text>
-                        <Text fontSize='md' align={'right'}>RD${image.price}</Text>
+                    <Link href={{
+                      pathname:`/Restaurant/${item.restaurantId}`,
+                      query: { item: item.id }
+                      }}
+                    >
+                      <div className={styles.item}>
+                        <Image
+                          src={item.image}
+                          width={350}
+                          height={175}
+                          borderRadius={'5%'}
+                          objectFit='cover'
+                          fallbackSrc={'https://via.placeholder.com/350x175'} 
+                          />
+                        <Text fontSize='xl' noOfLines={1}>{item.food}</Text>
+                        <div className={styles.info}>
+                          <Text fontSize='sm' noOfLines={1}>{item.restaurant}</Text>
+                          <Text fontSize='md' align={'right'}>RD${item.price}</Text>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 );
               })}
