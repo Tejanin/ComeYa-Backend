@@ -1,9 +1,9 @@
-
 .mainConteiner {
     top: 0;
     left: 0;
     width: 100vw;
     display: flex;
+    margin-bottom: 2em;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -27,6 +27,12 @@
 
 .filter{
     width: 20%;
+}
+
+.slider{
+    width: 80%;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .menu{
