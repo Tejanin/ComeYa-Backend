@@ -1,0 +1,40 @@
+.mainConteiner {
+    top: 0;
+    left: 0;
+    margin-bottom: 2em;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+  
+.tittle{
+    display: flex;
+    width: 90vw;
+    justify-content: flex-start;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+  
+.searchConteiner{
+    width: 90vw;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1em;
+    
+}
+
+.info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+.item {
+    margin: 1em;
+}
+
+@media(max-width: 1170px) {
+    .searchConteiner{
+      grid-template-columns: repeat(1, 1fr);
+    }
+}
