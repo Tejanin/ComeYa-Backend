@@ -1,0 +1,23 @@
+.mainConteiner {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    display: flex;
+    margin-bottom: 2em;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.tittle{
+    margin-top: 2em;
+    margin-bottom: 2em;
+  }
+
+.cartConteiner{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    min-width: 50vw;
+    max-width: 90vw;
+}
