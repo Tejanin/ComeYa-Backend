@@ -1,11 +1,10 @@
 "use client"
 import * as React from 'react';
 import { useEffect } from 'react';
-import { Nightlight } from '@mui/icons-material';
 import clsx from 'clsx';
 import { styled } from '@mui/system';
 import { useSwitch } from '@mui/base/useSwitch';
-import { ChakraProvider, ColorModeProvider, useColorMode } from '@chakra-ui/react';
+import { useColorMode } from '@chakra-ui/react';
 
 function MUISwitch(props) {
   const { getInputProps, checked, disabled, focusVisible } = useSwitch(props);
@@ -122,14 +121,13 @@ const ThemeSwitcher = () => {
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme);
       //toggleColorMode(savedTheme);
-
     }
   }, []);
 
   return <MUISwitch
   onChange={toggleTheme}
   defaultChecked={ localStorage.getItem('theme') === 'dark' }
-/>
+  />
 };
 
 export default ThemeSwitcher;
