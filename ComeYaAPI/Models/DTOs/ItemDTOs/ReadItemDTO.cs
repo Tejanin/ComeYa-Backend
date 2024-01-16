@@ -15,7 +15,7 @@
         public string Name { get; set; } = null!;
 
         public string Restaurant { get; set; } = null!;
-       
+        public int RestaurantId { get; set; }
         public ulong Combo {  get; set; }
         public string MarketingImg1 { get; set; }
         public string MarketingImg2 { get; set; }

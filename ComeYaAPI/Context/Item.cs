@@ -7,7 +7,7 @@ public partial class Item
 {
     public int Id { get; set; }
 
-    public int? FoodId { get; set; }
+    public int FoodId { get; set; }
 
     public string Description { get; set; } = null!;
 

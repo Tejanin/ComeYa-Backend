@@ -55,6 +55,7 @@ namespace ComeYaAPI.Repositories
                 Image = x.Image,
                 Name = x.Name,
                 Combo = x.Combo,
+                RestaurantId = x.RestaurantId,
                 Food = x.Food.FoodType.Description,
                 Category = x.Food.CategoryType.Description,
                 MarketingImg1= x.MarketingImg1,
@@ -93,6 +94,7 @@ namespace ComeYaAPI.Repositories
                 Image = item.Image,
                 Combo = item.Combo,
                 Name = item.Name,
+                RestaurantId=item.RestaurantId,
                 Food = item.Food.FoodType.Description,
                 Category = item.Food.CategoryType.Description
             };

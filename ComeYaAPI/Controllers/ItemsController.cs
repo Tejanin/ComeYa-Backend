@@ -20,14 +20,11 @@ namespace ComeYaAPI.Controllers
         {
             _configuration = configuration;
 
-            var url = _configuration["ElasticSearch: Uri"];
-            var defaultIndex = configuration["ElasticSearch: DefaultIndex"];
-            var password = configuration["ElasticSearch: Password"];
-            var user = configuration["ElasticSearch: User"];
+
             var settings = new ConnectionSettings(new Uri("http://localhost:9200"))
 
-                .DefaultIndex("items")
-                .BasicAuthentication("elastic", "elastic");
+                .DefaultIndex("items");
+               // .BasicAuthentication("elastic", "elastic");
 
             var client = new ElasticClient(settings);
             
@@ -43,16 +40,16 @@ namespace ComeYaAPI.Controllers
         {
            
             var items = await _unitOfWork.Items.GetAllItems(type,category,price,page,combo,restaurant,rand);
-            //foreach(var item in items.Entity)
-            //{
-            //    var indexResponse =await _elasticClient.CreateDocumentAsync(item);
-            //    if (!indexResponse.IsValid)
-            //    {
-            //        return StatusCode(500, "Error al indexar los elementos en Elasticsearch.");
+            foreach (var item in items.Entity)
+            {
+                var indexResponse = await _elasticClient.CreateDocumentAsync(item);
+                if (!indexResponse.IsValid)
+                {
+                    return StatusCode(500, "Error al indexar los elementos en Elasticsearch.");
 
-            //    }
-            //}
-           
+                }
+            }
+
             _unitOfWork.Dispose();
 
             return Ok(items.Entity);
@@ -68,7 +65,7 @@ namespace ComeYaAPI.Controllers
         }
 
         [HttpGet("Search")]
-        public ActionResult<IEnumerable<Item>> Buscar(string termino)
+        public  ActionResult<IEnumerable<Item>> Buscar(string termino)
         {
     
 
@@ -113,16 +110,28 @@ namespace ComeYaAPI.Controllers
      )
      .Size(100));
 
-            if (response.IsValid)
+            var result = _elasticClient.Search<ReadItemDTO>(s => s.Query
+            (q => q.QueryString(d => d
+            .Query($"*{termino}*"))).Size(40));
+            
+            if (response.Documents.Count != 0)
             {
                 var resultados = response.Documents;
+                return Ok(resultados.ToList());
+            }
+            
+
+            if (result.Documents.Count != 0)
+            {
+                var resultados = result.Documents;
                 return Ok(resultados.ToList());
             }
             else
             {
                 // Manejar errores si es necesario
-                return StatusCode(500, "Error al realizar la búsqueda en Elasticsearch.");
+                return BadRequest("No se encontraron articulos");
             }
+            
         }
     }
     // Metodo Get para mostrar los combos (filtro: Precio, FoodType, Restaurante)

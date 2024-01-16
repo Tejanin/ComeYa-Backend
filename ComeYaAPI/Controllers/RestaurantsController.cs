@@ -28,7 +28,7 @@ namespace ComeYaAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> GetById(int id)
         {
-            var restaurant = await _unitOfWork.Restaurants.GetMenu(id);
+            var restaurant = await _unitOfWork.Restaurants.GetById(id);
             _unitOfWork.Dispose();
 
             return Ok(restaurant.Entity);
