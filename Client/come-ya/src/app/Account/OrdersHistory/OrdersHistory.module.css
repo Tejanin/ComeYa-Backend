@@ -1,0 +1,44 @@
+.mainConteiner {
+    top: 0;
+    left: 0;
+    margin-bottom: 2em;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.tittle{
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+.historyConteiner{
+    min-width: 40vw;
+    max-width: 90vw;
+}
+
+
+.viewReceipt {
+    text-decoration: underline;
+}
+
+.headerInfo{
+    display: flex;
+    justify-content: space-between;
+}
+
+.bodyInfo{
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.leftBodyInfo{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1em;
+}
