@@ -45,11 +45,11 @@ const OpenModal = (props) => {
 
   return (
     <div>
-        { props.whatButton === "SignIn" ? (
-            <Button variant="outlined" color="error" onClick={openModal}>Iniciar Sesion</Button>
-        ):(
-            <Button variant="contained" color="error" onClick={openModal}>Registrarse</Button>
-        )}
+      { props.whatButton === "SignIn" ? (
+        <Button variant="outlined" color="error" onClick={openModal}>Iniciar Sesion</Button>
+      ):(
+        <Button variant="contained" color="error" onClick={openModal}>Registrarse</Button>
+      )}
       <Modal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
