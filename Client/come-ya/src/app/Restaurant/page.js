@@ -1,9 +1,11 @@
-import { Card, CardBody, Heading, Text, Image, Stack, Box, Button } from '@chakra-ui/react'
+"use client"
+import { useState } from 'react';
+import { Card, CardBody, Heading, Text, Image, Stack, Box } from '@chakra-ui/react'
 import styles from "./Restaurant.module.css"
 import { StarRateRounded } from "@mui/icons-material"
-import ImageLoading from "../../components/ImageLoading/ImageLoading"
 import Link from "next/link"
-import { Skeleton } from "@chakra-ui/react"
+import { Pagination } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const restaurantes = [
     {
@@ -86,49 +88,69 @@ const restaurantes = [
 ]
 
 export default function Restaurants() {
-    return(
-      <div className={styles.mainConteiner}>
-        <div className={styles.tittle}>
-          <Heading justifyContent={"flex-start"}>Restaurantes</Heading>
-        </div>
-        <div className={styles.restaurantsGrid}>
-          {restaurantes.map((restaurant, index) => {
-            return(
-              <div key={index}>
-                <Link href={`/Restaurant/${restaurant.Id}`}>
-                  <Card
-                    direction={{ base: 'column', sm: 'row' }}
-                    overflow='hidden'
-                    variant='elevated'
-                    transition="box-shadow 0.3s ease-in-out"
-                    _hover={{
-                      boxShadow: 'lg', // Aumenta la sombra en el hover
-                    }}
-                  >
-                    <Image
-                      objectFit='cover'
-                      maxW={{ base: '100%', sm: '200px' }}
-                      src={restaurant.Logo}
-                      alt={`Imagen de ${restaurant.Name}`}
-                    />
-                    <Stack>
-                      <CardBody>
-                        <Box display='flex' justifyContent='space-between' alignItems='center'>
-                          <Heading size='md'>{restaurant.Name}</Heading>
-                          <Box display='flex' flexDirection='row' alignItems='center'>
-                            <StarRateRounded sx={{ color: "#ffc107" }} />
-                            <Text py='2'>{restaurant.Rating}</Text>
-                          </Box> 
-                        </Box>
-                        <Text py='2'>{restaurant.Description}</Text>
-                      </CardBody>
-                    </Stack>
-                  </Card>
-                </Link>
-              </div>
-            )
-          })}
-        </div>
+  let theme = createTheme({
+    palette: {
+      primary: {
+        main: '#C62828',
+      },
+      secondary: {
+        main: '#C62828',
+      },
+    },
+  });
+
+  const [page, setPage] = useState(1);
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
+
+
+  return(
+    <div className={styles.mainConteiner}>
+      <div className={styles.tittle}>
+        <Heading>Restaurantes</Heading>
       </div>
-    )
+      <div className={styles.restaurantsGrid}>
+        {restaurantes.map((restaurant, index) => {
+          return(
+            <div key={index}>
+              <Link href={`/Restaurant/${restaurant.Id}`}>
+                <Card
+                  direction={{ base: 'column', sm: 'row' }}
+                  overflow='hidden'
+                  variant='elevated'
+                  transition="box-shadow 0.3s ease-in-out"
+                  _hover={{
+                    boxShadow: 'lg', // Aumenta la sombra en el hover
+                  }}
+                >
+                  <Image
+                    objectFit='cover'
+                    maxW={{ base: '100%', sm: '200px' }}
+                    src={restaurant.Logo}
+                    alt={`Imagen de ${restaurant.Name}`}
+                  />
+                  <Stack>
+                    <CardBody>
+                      <Box display='flex' justifyContent='space-between' alignItems='center'>
+                        <Heading size='md'>{restaurant.Name}</Heading>
+                        <Box display='flex' flexDirection='row' alignItems='center'>
+                          <StarRateRounded sx={{ color: "#ffc107" }} />
+                          <Text py='2'>{restaurant.Rating}</Text>
+                        </Box> 
+                      </Box>
+                      <Text py='2'>{restaurant.Description}</Text>
+                    </CardBody>
+                  </Stack>
+                </Card>
+              </Link>
+            </div>
+          )
+        })}
+      </div>
+      <Box mt={6}>
+        <ThemeProvider theme={theme}><Pagination count={10} page={page} onChange={handleChange} color='error'/></ThemeProvider>
+      </Box>
+    </div>
+  )
 }
