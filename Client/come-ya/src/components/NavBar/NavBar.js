@@ -1,27 +1,89 @@
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './NavBar.module.css'
 import Link from 'next/link'
 import * as React from 'react';
 import Box from '@mui/system/Box';
-import { Stack } from '@mui/material';
+import { Stack, TextField, IconButton, Badge, Tooltip } from '@mui/material';
 import OpenModal from '../OpenModal/OpenModal';
 import { ChakraProvider, Heading } from '@chakra-ui/react'
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
+import Autocomplete from '@mui/material/Autocomplete';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import SearchIcon from '@mui/icons-material/Search';
-import CloseRounded from '@mui/icons-material/CloseRounded';
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
+import CloseRounded from '@mui/icons-material/CloseRounded'
+import { useRouter } from 'next/navigation';
 
+function notificationsLabel(count) {
+  if (count === 0) {
+    return 'no notifications';
+  }
+  if (count > 99) {
+    return 'more than 99 notifications';
+  }
+  return `${count} notifications`;
+}
 
 export default function NavBar(){
+
+  //Objetos de ejemplo
+  const top100Films = [
+    { title: 'The Shawshank Redemption', year: 1994 },
+    { title: 'The Godfather', year: 1972 },
+    { title: 'The Godfather: Part II', year: 1974 },
+    { title: 'The Dark Knight', year: 2008 },
+    { title: '12 Angry Men', year: 1957 },
+    { title: "Schindler's List", year: 1993 },
+    { title: 'Pulp Fiction', year: 1994 },
+  ];
+
+  const cart = [
+    {
+      "id": 43,
+      "name": "Rollito Playbe",
+      "description": null,
+      "price": 395,
+      "quantity": 3,
+      "amount": 1398.3,
+      "image": "https://imgur.com/FXd7EJm.png"
+    },
+    {
+      "id": 45,
+      "name": "David Sakayama",
+      "description": null,
+      "price": 795,
+      "quantity": 4,
+      "amount": 3752.4,
+      "image": "https://imgur.com/wS6xKn9.png"
+    },
+    {
+      "id": 46,
+      "name": "Pokesemeimpolta",
+      "description": null,
+      "price": 475,
+      "quantity": 3,
+      "amount": 1681.5,
+      "image": "https://imgur.com/qlePTJy.png"
+    },
+  ]
+
+  const [cartItemsCounter, setCartItemsCounter] = useState(0);
+
   const [searchValue, setSearchValue] = useState('');
+
+  useEffect (() => {
+    setCartItemsCounter(cart.reduce((accumulator, currentValue) => accumulator + currentValue.quantity, 0))
+  },[cart])
+
+  const router = useRouter();
 
   const handleSearch = () => {
     // Lógica para realizar la búsqueda con searchValue
     // llamar a una API, filtrar datos, etc.
     alert(`Realizar búsqueda con: ${searchValue}`);
+    router.push(`/Search/${searchValue}`);
   };
 
   const handleClear = () => {
@@ -39,34 +101,47 @@ export default function NavBar(){
           </Link>
           <Heading>ComeYa</Heading>
 
-
           <Paper variant="filled"
             component="form"
-            sx={{ p: '1px 4px', display: 'flex', alignItems: 'center', width: '99%', backgroundColor: 'rgba(0, 0, 0, 0.1)'}}
+            sx={{ p: '1px 4px', display: 'flex', alignItems: 'center', minWidth: '30vw', backgroundColor: '#E5E5E5'}}
           >
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-              <SearchIcon />
-            </IconButton>
             <InputBase
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               sx={{ ml: 1, flex: 1 }}
-              placeholder="Comida, restaurante, bebidas..."
-              inputProps={{ 'aria-label': 'search come ya' }}
+              placeholder="Buscar..."
+              inputProps={{ 'aria-label': 'search' }}
             />
             <IconButton type="button" sx={{ p: '10px' }} aria-label="clear" onClick={handleClear}>
               <CloseRounded />
             </IconButton>
+            { searchValue === '' ? (
+              <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                <SearchIcon />
+              </IconButton>
+            ):(
+              <Link href={{
+                pathname: '/Search',
+                query: {search: searchValue}
+              }}>
+                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                  <SearchIcon />
+                </IconButton>
+              </Link>
+            )}
           </Paper>
-
-
         </Box>
       </Box>
-      
       <Box className={styles.navRight}>
-        {/*<Button color='warning' variant='contained'>100 ComeCoins</Button>*/}
         <Stack direction="row" spacing={2}>
-          <ChakraProvider><ThemeSwitcher/></ChakraProvider>
+          <Link href={'/ShoppingCart'}>
+            <IconButton aria-label={notificationsLabel(cartItemsCounter)}>
+              <Badge badgeContent={cartItemsCounter} color="error">
+                <ShoppingCartOutlinedIcon color="error"/>
+              </Badge>
+            </IconButton>
+          </Link>
+          <ChakraProvider><ThemeSwitcher /></ChakraProvider>
           <OpenModal //Para el prop WhatButton, si se pone "SignIn" es para el boton de Iniciar Sesion, sino es para Registrarse
           whatButton="SignIn"
           />
